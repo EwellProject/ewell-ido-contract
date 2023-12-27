@@ -36,9 +36,6 @@
         <ContractReference Include="..\..\protobuf\whitelist_contract.proto">
             <Link>Protobuf\Proto\reference\whitelist_contract.proto</Link>
         </ContractReference>
-        <ContractReference Include="..\..\protobuf\awaken_swap_contract.proto">
-            <Link>Protobuf\Proto\reference\awaken_swap_contract.proto</Link>
-        </ContractReference>
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="AElf.Contracts.Genesis" Version="1.2.0" />

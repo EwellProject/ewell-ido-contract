@@ -1,4 +1,3 @@
-using Awaken.Contracts.Swap;
 
 namespace AElf.Contracts.Ewell
 {
@@ -9,12 +8,7 @@ namespace AElf.Contracts.Ewell
            get;
            set;
        }
-
-       internal Awaken.Contracts.Swap.AwakenSwapContractContainer.AwakenSwapContractReferenceState SwapContract
-       {
-           get;
-           set;
-       }
-        internal AElf.Contracts.MultiToken.TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
+       
+       internal AElf.Contracts.MultiToken.TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
     }
 }

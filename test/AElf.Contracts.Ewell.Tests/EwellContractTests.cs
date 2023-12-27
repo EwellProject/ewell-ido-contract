@@ -1,47 +1,43 @@
-using System.Linq;
-using System.Threading.Tasks;
-using AElf.Contracts.MultiToken;
-using System.Threading.Tasks;
-using Awaken.Contracts.Swap;
-using Google.Protobuf.WellKnownTypes;
-using Xunit;
 using System;
 using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using AElf.Contracts.Ewell.Tests;
 using AElf.Contracts.MultiToken;
-using AElf.ContractTestBase.ContractTestKit;
 using AElf.CSharp.Core;
 using AElf.CSharp.Core.Extension;
 using AElf.Types;
+using Google.Protobuf.WellKnownTypes;
 using Shouldly;
-using Awaken.Contracts.Token;
-using Google.Protobuf.Collections;
-using Xunit.Sdk;
+using Xunit;
 
 namespace AElf.Contracts.Ewell
 {
     public class EwellContractTests : EwellContractTestBase
     {
         private Hash projectId0;
+        private const long TotalSupply = 100000000_00000000;
+        private readonly int _chainId = ChainHelper.ConvertBase58ToChainId("AELF");
+
+        private const string TestSymbol = "TEST-1";
+
         [Fact]
         public async Task InitializeTest()
         {
-           await Initialize();
-           await AdminStub.Initialize.SendAsync(new InitializeInput()
-           {
-               WhitelistContract = WhitelistContractAddress
-           });
-           var whitelistAddress = await AdminStub.GetWhitelistContractAddress.CallAsync(new Empty());
-           whitelistAddress.ShouldNotBe(new Address());
-           var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
-           await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
-           {
-               Amount = 1_00000000,
-               Symbol = "TEST",
-               Memo = "ForUserClaim",
-               To = virtualAddress
-           });
+            await CreateAndGetTokenNew();
+            await AdminStub.Initialize.SendAsync(new InitializeInput()
+            {
+                WhitelistContract = WhitelistContractAddress
+            });
+            var whitelistAddress = await AdminStub.GetWhitelistContractAddress.CallAsync(new Empty());
+            whitelistAddress.ShouldNotBe(new Address());
+            var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
+            await TokenContractStub.Transfer.SendAsync(new TransferInput()
+            {
+                Amount = 1_00000000,
+                Symbol = TestSymbol,
+                Memo = "ForUserClaim",
+                To = virtualAddress
+            });
         }
 
         [Fact]
@@ -51,8 +47,8 @@ namespace AElf.Contracts.Ewell
             var registerInput = new RegisterInput()
             {
                 AcceptedCurrency = "ELF",
-                ProjectCurrency = "TEST",
-                CrowdFundingType = "标价销售",
+                ProjectCurrency =  TestSymbol,
+                CrowdFundingType = "price sale",
                 CrowdFundingIssueAmount = 1_00000000,
                 PreSalePrice = 1_00000000,
                 StartTime = blockTimeProvider.GetBlockTime().AddSeconds(3),
@@ -66,11 +62,14 @@ namespace AElf.Contracts.Ewell
                 LiquidityLockProportion = 50,
                 ListMarketInfo = new ListMarketInfo()
                 {
-                    Data = { new ListMarket()
+                    Data =
                     {
-                        Market = AwakenSwapContractAddress,
-                        Weight = 100
-                    }}
+                        new ListMarket()
+                        {
+                            Market = AwakenSwapContractAddress,
+                            Weight = 100
+                        }
+                    }
                 },
                 UnlockTime = Timestamp.FromDateTime(DateTime.UtcNow.Add(new TimeSpan(0, 0, 30000))),
                 TotalPeriod = 1,
@@ -78,36 +77,34 @@ namespace AElf.Contracts.Ewell
                 RestDistributeProportion = 0,
                 PeriodDuration = 0
             };
-           var executionResult = await AdminStub.Register.SendAsync(registerInput);
+            var executionResult = await AdminStub.Register.SendAsync(registerInput);
 
-           var projectId = ProjectRegistered.Parser
-               .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered))).NonIndexed)
-               .ProjectId;
+            var projectId = ProjectRegistered.Parser
+                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
+                    .NonIndexed)
+                .ProjectId;
 
-          var whitelistId =  await AdminStub.GetWhitelistId.CallAsync(projectId);
-          whitelistId.ShouldBe(HashHelper.ComputeFrom(0));
-          projectId0 = projectId;
-
+            var whitelistId = await AdminStub.GetWhitelistId.CallAsync(projectId);
+            whitelistId.ShouldBe(HashHelper.ComputeFrom(0));
+            projectId0 = projectId;
         }
 
         [Fact]
         public async Task WhitelistTest()
         {
             await RegisterTest();
-        
+
             await AdminStub.AddWhitelists.SendAsync(new AddWhitelistsInput()
             {
                 ProjectId = projectId0,
-                Users = {UserTomAddress}
+                Users = { UserTomAddress }
             });
-            
+
             await AdminStub.RemoveWhitelists.SendAsync(new RemoveWhitelistsInput()
             {
                 ProjectId = projectId0,
-                Users = {UserTomAddress}
+                Users = { UserTomAddress }
             });
-
-  
         }
 
         [Fact]
@@ -115,10 +112,9 @@ namespace AElf.Contracts.Ewell
         {
             var investAmount = 100;
             await RegisterTest();
-          
             
             blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(3));
-            await TomTokenContractStub.Approve.SendAsync(new MultiToken.ApproveInput()
+            await TomTokenContractStub.Approve.SendAsync(new ApproveInput()
             {
                 Spender = EwellContractAddress,
                 Amount = 10000,
@@ -129,17 +125,14 @@ namespace AElf.Contracts.Ewell
                 ProjectId = projectId0,
                 Currency = "ELF",
                 InvestAmount = investAmount
-
             });
 
-            var investDetail =  await TomStub.GetInvestDetail.CallAsync(new GetInvestDetailInput()
+            var investDetail = await TomStub.GetInvestDetail.CallAsync(new GetInvestDetailInput()
             {
                 ProjectId = projectId0,
                 User = UserTomAddress
             });
             investDetail.Amount.ShouldBe(investAmount);
-            
-         
         }
 
         [Fact]
@@ -148,16 +141,16 @@ namespace AElf.Contracts.Ewell
             await InvestTest();
             blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(30));
             await AdminStub.NextPeriod.SendAsync(projectId0);
-          
+
             await TomStub.Claim.SendAsync(new ClaimInput()
             {
                 ProjectId = projectId0,
                 User = UserTomAddress
             });
-            var balance = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balance = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
-                Symbol = "TEST"
+                Symbol = TestSymbol
             });
             balance.Balance.ShouldNotBe(0);
         }
@@ -169,44 +162,45 @@ namespace AElf.Contracts.Ewell
             var projectInfoBefore = await AdminStub.GetProjectInfo.CallAsync(projectId0);
             projectInfoBefore.Enabled.ShouldBeTrue();
             var virtualAddress = await AdminStub.GetProjectAddressByProjectHash.CallAsync(projectId0);
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = virtualAddress,
-                Symbol = "TEST"
+                Symbol = TestSymbol
             });
-            
+
             await AdminStub.Cancel.SendAsync(projectId0);
-            
+
             var projectInfoAfter = await AdminStub.GetProjectInfo.CallAsync(projectId0);
             projectInfoAfter.Enabled.ShouldBeFalse();
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = virtualAddress,
-                Symbol = "TEST"
+                Symbol = TestSymbol
             });
             balanceBefore.Balance.ShouldBePositive();
             balanceAfter.Balance.ShouldBe(0);
         }
+
         [Fact]
         public async Task ClaimLiquidatedDamageTest()
         {
             await UnInvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
-            
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
             await TomStub.ClaimLiquidatedDamage.SendAsync(projectId0);
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
-            var liquidatedDamageDetails = await  TomStub.GetLiquidatedDamageDetails.CallAsync(projectId0);
-            var liquidatedDamage =  liquidatedDamageDetails.Details.First(x => x.User == UserTomAddress);
+            var liquidatedDamageDetails = await TomStub.GetLiquidatedDamageDetails.CallAsync(projectId0);
+            var liquidatedDamage = liquidatedDamageDetails.Details.First(x => x.User == UserTomAddress);
             liquidatedDamage.Claimed.ShouldBe(true);
         }
 
@@ -214,20 +208,20 @@ namespace AElf.Contracts.Ewell
         public async Task UnInvestTest()
         {
             await InvestTest();
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
 
             await TomStub.UnInvest.SendAsync(projectId0);
-            
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
-            
+
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
             var profit = await TomStub.GetProfitDetail.CallAsync(new GetProfitDetailInput()
             {
@@ -235,13 +229,13 @@ namespace AElf.Contracts.Ewell
                 User = UserTomAddress
             });
             profit.TotalProfit.ShouldBe(0);
-            
+
             //User has already unInvest
             var alreadyUnInvestException = await TomStub.UnInvest.SendWithExceptionAsync(projectId0);
             alreadyUnInvestException.TransactionResult.Error.ShouldContain("User has already unInvest");
         }
 
-        
+
         // [Fact]
         // public async Task AddLiquidityTest()
         // {
@@ -257,25 +251,25 @@ namespace AElf.Contracts.Ewell
         //     await AdminStub.LockLiquidity.SendAsync(projectId0);
         //     
         // }
-        
+
         [Fact]
         public async Task RefundTest()
         {
             await InvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
-            
+
             await TomStub.ReFund.SendAsync(projectId0);
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
-          
+
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
             var profit = await TomStub.GetProfitDetail.CallAsync(new GetProfitDetailInput()
             {
@@ -290,23 +284,23 @@ namespace AElf.Contracts.Ewell
         {
             await InvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
-            
+
             await AdminStub.ReFundAll.SendAsync(new ReFundAllInput()
             {
                 ProjectId = projectId0,
-                Users = { UserTomAddress}
+                Users = { UserTomAddress }
             });
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
-          
+
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
             var profit = await TomStub.GetProfitDetail.CallAsync(new GetProfitDetailInput()
             {
@@ -315,44 +309,44 @@ namespace AElf.Contracts.Ewell
             });
             profit.TotalProfit.ShouldBe(0);
         }
-        
+
         [Fact]
         public async Task ClaimLiquidatedDamageAllTest()
         {
             await UnInvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
-            
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
             await AdminStub.ClaimLiquidatedDamageAll.SendAsync(projectId0);
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
                 Symbol = "ELF"
             });
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
-            var liquidatedDamageDetails = await  TomStub.GetLiquidatedDamageDetails.CallAsync(projectId0);
-            var liquidatedDamage =  liquidatedDamageDetails.Details.First(x => x.User == UserTomAddress);
+            var liquidatedDamageDetails = await TomStub.GetLiquidatedDamageDetails.CallAsync(projectId0);
+            var liquidatedDamage = liquidatedDamageDetails.Details.First(x => x.User == UserTomAddress);
             liquidatedDamage.Claimed.ShouldBe(true);
         }
-        
-        
+
+
         [Fact]
         public async Task WithdrawTest()
         {
             await InvestTest();
-            
+
             blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(30));
-            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = AdminAddress,
                 Symbol = "ELF"
             });
             await AdminStub.Withdraw.SendAsync(projectId0);
-            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = AdminAddress,
                 Symbol = "ELF"
@@ -368,8 +362,8 @@ namespace AElf.Contracts.Ewell
             var registerInput = new RegisterInput()
             {
                 AcceptedCurrency = "ELF",
-                ProjectCurrency = "TEST",
-                CrowdFundingType = "标价销售",
+                ProjectCurrency = TestSymbol,
+                CrowdFundingType = "price sale",
                 CrowdFundingIssueAmount = 1_00000000,
                 PreSalePrice = 1_00000000,
                 StartTime = blockTimeProvider.GetBlockTime().AddSeconds(3),
@@ -383,11 +377,14 @@ namespace AElf.Contracts.Ewell
                 LiquidityLockProportion = 50,
                 ListMarketInfo = new ListMarketInfo()
                 {
-                    Data = { new ListMarket()
+                    Data =
                     {
-                        Market = AwakenSwapContractAddress,
-                        Weight = 100
-                    }}
+                        new ListMarket()
+                        {
+                            Market = AwakenSwapContractAddress,
+                            Weight = 100
+                        }
+                    }
                 },
                 UnlockTime = Timestamp.FromDateTime(DateTime.UtcNow.Add(new TimeSpan(0, 0, 30000))),
                 TotalPeriod = 1,
@@ -395,160 +392,110 @@ namespace AElf.Contracts.Ewell
                 RestDistributeProportion = 0,
                 PeriodDuration = 0
             };
-            
+
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
 
             var projectId = ProjectRegistered.Parser
-                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered))).NonIndexed)
+                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
+                    .NonIndexed)
                 .ProjectId;
 
-            var whitelistId =  await AdminStub.GetWhitelistId.CallAsync(projectId);
+            var whitelistId = await AdminStub.GetWhitelistId.CallAsync(projectId);
             whitelistId.ShouldBe(HashHelper.ComputeFrom(0));
             projectId0 = projectId;
-            
-             var virtualAddress = await AdminStub.GetProjectAddressByProjectHash.CallAsync(projectId0);
-             virtualAddress.ShouldBe(virtualAddressExpect);
+
+            var virtualAddress = await AdminStub.GetProjectAddressByProjectHash.CallAsync(projectId0);
+            virtualAddress.ShouldBe(virtualAddressExpect);
+        }
+        
+        [Fact]
+        public async Task CreateNftCollectionAndNft()
+        {
+            var collectionInfo = NftCollectionInfo("TEST", "TEST Collection");
+            var createCollectionRes = await CreateNftCollectionAsync(collectionInfo);
+            createCollectionRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var createNftRes = await CreateNftAsync(collectionInfo.Symbol, NftInfo("1", "TEST 1 symbol"));
+            createNftRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         }
 
         
-        private async Task CreateAndGetToken()
+        [Fact]
+        public async Task CreateAndGetTokenNew()
         {
-            //TEST
-            var result = await TokenContractStub.Create.SendAsync(new AElf.Contracts.MultiToken.CreateInput
-            {
-                Issuer = AdminAddress,
-                Symbol = "TEST",
-                Decimals = 8,
-                IsBurnable = true,
-                TokenName = "TEST symbol",
-                TotalSupply = 100000000_00000000
-            });
-
-            result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-
-            var issueResult = await TokenContractStub.Issue.SendAsync(new AElf.Contracts.MultiToken.IssueInput
+            var collectionInfo = NftCollectionInfo("TEST", "TEST Collection");
+            var createCollectionRes = await CreateNftCollectionAsync(collectionInfo);
+            createCollectionRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var testNftInfo = NftInfo("1", "TEST 1 symbol");
+            var createNftRes = await CreateNftAsync(collectionInfo.Symbol, testNftInfo);
+            createNftRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var issueResult = await TokenContractStub.Issue.SendAsync(new IssueInput
             {
                 Amount = 100000000000000,
-                Symbol = "TEST",
+                Symbol = TestSymbol,
                 To = AdminAddress
             });
             issueResult.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-            var balance = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
+            var balance = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = AdminAddress,
-                Symbol = "TEST"
+                Symbol = TestSymbol
             });
             balance.Balance.ShouldBe(100000000000000);
-            //DAI
-            var result2 = await TokenContractStub.Create.SendAsync(new AElf.Contracts.MultiToken.CreateInput
-            {
-                Issuer = AdminAddress,
-                Symbol = "DAI",
-                Decimals = 10,
-                IsBurnable = true,
-                TokenName = "DAI symbol",
-                TotalSupply = 100000000_00000000
-            });
-
-            result2.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-
-            var issueResult2 = await TokenContractStub.Issue.SendAsync(new AElf.Contracts.MultiToken.IssueInput
-            {
-                Amount = 100000000000000,
-                Symbol = "DAI",
-                To = AdminAddress
-            });
-            issueResult2.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-            var balance2 = await TokenContractStub.GetBalance.CallAsync(new AElf.Contracts.MultiToken.GetBalanceInput()
-            {
-                Owner = AdminAddress,
-                Symbol = "DAI"
-            });
-            balance2.Balance.ShouldBe(100000000000000);
-            await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
-            {
-                Amount = 100000000000,
-                Symbol = "ELF",
-                Memo = "Recharge",
-                To = UserTomAddress
-            });
-            await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
-            {
-                Amount = 100000000000,
-                Symbol = "ELF",
-                Memo = "Recharge",
-                To = UserLilyAddress
-            });
-        
-           
-            await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
-            {
-                Amount = 100000000000,
-                Symbol = "DAI",
-                Memo = "Recharge",
-                To = UserTomAddress
-            });
-            //authorize  Tom and Lily and admin to transfer ELF and TEST and DAI to FinanceContract
-            // await UserTomTokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "ELF"
-            // });
-            // await UserTomTokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "DAI"
-            // });
-            // await TokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "ELF"
-            // });
-            // await UserLilyTokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "ELF"
-            // });
-            // await UserTomTokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "TEST"
-            // });
-            // await TokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "TEST"
-            // });
-            // await UserLilyTokenContractStub.Approve.SendAsync(new AElf.Contracts.MultiToken.ApproveInput()
-            // {
-            //     Amount = 100000000000,
-            //     Spender = AwakenSwapContractAddress,
-            //     Symbol = "TEST"
-            // });
         }
-        private async Task Initialize()
+
+        private async Task<IExecutionResult<Empty>> CreateNftAsync(string colllectionSymbol, TokenInfo nftInfo)
         {
-            await CreateAndGetToken();
-            await AdminLpStub.Initialize.SendAsync(new Awaken.Contracts.Token.InitializeInput()
+            var input = new CreateInput
             {
-                Owner = AwakenSwapContractAddress
-            });
-            await AwakenSwapContractStub.Initialize.SendAsync(new Awaken.Contracts.Swap.InitializeInput()
+                Symbol = $"{colllectionSymbol}{nftInfo.Symbol}",
+                TokenName = nftInfo.TokenName,
+                TotalSupply = nftInfo.TotalSupply,
+                Decimals = nftInfo.Decimals,
+                Issuer = nftInfo.Issuer,
+                IsBurnable = nftInfo.IsBurnable,
+                IssueChainId = nftInfo.IssueChainId,
+                ExternalInfo = nftInfo.ExternalInfo,
+                Owner = nftInfo.Issuer
+            };
+            return await TokenContractStub.Create.SendAsync(input);
+        }
+        
+        private async Task<IExecutionResult<Empty>> CreateNftCollectionAsync(TokenInfo collectionInfo)
+        {
+            return await CreateMutiTokenAsync(TokenContractStub, new CreateInput
             {
-                Admin = AdminAddress,
-                AwakenTokenContractAddress = LpTokentContractAddress
-            });
-            await AwakenSwapContractStub.SetFeeRate.SendAsync(new Int64Value(){Value = 30});
-            await UserTomSwapStub.CreatePair.SendAsync(new CreatePairInput()
-            {
-                SymbolPair = "ELF-TEST"
+                Symbol = $"{collectionInfo.Symbol}0",
+                TokenName = collectionInfo.TokenName,
+                TotalSupply = collectionInfo.TotalSupply,
+                Decimals = collectionInfo.Decimals,
+                Issuer = collectionInfo.Issuer,
+                Owner = collectionInfo.Issuer,
+                IssueChainId = collectionInfo.IssueChainId,
+                ExternalInfo = collectionInfo.ExternalInfo
             });
         }
+        
+        private TokenInfo NftCollectionInfo(string symbol, string tokenName) => new()
+        {
+            Symbol = $"{symbol}-",
+            Decimals = 0,
+            TotalSupply = 1,
+            TokenName = tokenName,
+            Issuer = AdminAddress,
+            Owner = AdminAddress,
+            IssueChainId = _chainId
+        };
+        
+        private TokenInfo NftInfo(string symbol, string tokenName) => new()
+        {
+            Symbol = symbol,
+            Decimals = 0,
+            TotalSupply = TotalSupply,
+            TokenName = tokenName,
+            Issuer = AdminAddress,
+            Owner = AdminAddress,
+            IsBurnable = true,
+            IssueChainId = _chainId
+        };
     }
 }

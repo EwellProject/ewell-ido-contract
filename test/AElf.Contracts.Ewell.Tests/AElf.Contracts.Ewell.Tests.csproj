@@ -11,23 +11,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AElf.Contracts.Genesis" Version="1.6.0"/>
-        <PackageReference Include="AElf.CrossChain" Version="1.6.0"/>
-        <PackageReference Include="AElf.EconomicSystem" Version="1.6.0"/>
-        <PackageReference Include="AElf.GovernmentSystem" Version="1.6.0"/>
-        <PackageReference Include="coverlet.msbuild" Version="2.5.1"/>
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0"/>
-        <PackageReference Include="coverlet.collector" Version="3.1.0"/>
-        <PackageReference Include="Shouldly" Version="3.0.2"/>
-        <PackageReference Include="Volo.Abp.Core" Version="5.2.2"/>
-        <PackageReference Include="xunit" Version="2.4.1"/>
-        <PackageReference Include="xunit.runner.console" Version="2.4.1"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1"/>
+        <PackageReference Include="AElf.Contracts.Genesis" Version="1.6.0" />
+        <PackageReference Include="AElf.CrossChain" Version="1.6.0" />
+        <PackageReference Include="AElf.EconomicSystem" Version="1.6.0" />
+        <PackageReference Include="AElf.GovernmentSystem" Version="1.6.0" />
+        <PackageReference Include="coverlet.msbuild" Version="2.5.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0" />
+        <PackageReference Include="coverlet.collector" Version="3.1.0" />
+        <PackageReference Include="Shouldly" Version="3.0.2" />
+        <PackageReference Include="Volo.Abp.Core" Version="5.2.2" />
+        <PackageReference Include="xunit" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.console" Version="2.4.1" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AElf.ContractTestKit" Version="1.6.0"/>
-        <PackageReference Include="AElf.ContractTestBase" Version="1.6.0"/>
+        <PackageReference Include="AElf.ContractTestKit" Version="1.6.0" />
+        <PackageReference Include="AElf.ContractTestBase" Version="1.6.0" />
     </ItemGroup>
     <ItemGroup>
         <ContractStub Include="..\..\protobuf\acs0.proto">
@@ -48,11 +48,8 @@
         <ContractStub Include="..\..\protobuf\token_contract.proto">
             <Link>Protobuf\Proto\token_contract.proto</Link>
         </ContractStub>
-        <ContractStub Include="..\..\protobuf\awaken_token_contract.proto">
-            <Link>Protobuf\Proto\awaken_token_contract.proto</Link>
-        </ContractStub>
-        <ContractStub Include="..\..\protobuf\awaken_swap_contract.proto">
-            <Link>Protobuf\Proto\awaken_swap_contract.proto</Link>
+        <ContractStub Include="..\..\protobuf\token_contract_impl.proto">
+            <Link>Protobuf\Proto\token_contract_impl.proto</Link>
         </ContractStub>
         <ContractStub Include="..\..\protobuf\ewell_contract.proto">
             <Link>Protobuf\Proto\ewell_contract.proto</Link>
@@ -63,11 +60,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\contract\AElf.Contracts.Ewell\AElf.Contracts.Ewell.csproj"/>
-        <ProjectReference Include="..\..\contract\Awaken.Contracts.Swap\Awaken.Contracts.Swap.csproj"/>
-        <ProjectReference Include="..\..\contract\AElf.Contracts.Whitelist\AElf.Contracts.Whitelist.csproj"/>
-        <ProjectReference Include="..\..\contract\Awaken.Contracts.Token\Awaken.Contracts.Token.csproj"/>
-        <ProjectReference Include="..\..\src\AElf.Boilerplate.TestBase\AElf.Boilerplate.TestBase.csproj"/>
+        <ProjectReference Include="..\..\contract\AElf.Contracts.Ewell\AElf.Contracts.Ewell.csproj" />
+        <ProjectReference Include="..\..\contract\AElf.Contracts.Whitelist\AElf.Contracts.Whitelist.csproj" />
+        <ProjectReference Include="..\..\src\AElf.Boilerplate.TestBase\AElf.Boilerplate.TestBase.csproj" />
     </ItemGroup>
 
 </Project>

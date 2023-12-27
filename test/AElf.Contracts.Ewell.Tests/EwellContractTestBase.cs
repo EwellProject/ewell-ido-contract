@@ -1,27 +1,32 @@
-using AElf.Boilerplate.TestBase;
-using AElf.Cryptography.ECDSA;
 using System.IO;
-using System.Threading.Tasks;
-using AElf.Kernel;
-using AElf.Kernel.SmartContract.Application;
-using AElf.Types;
-using Google.Protobuf;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AElf.Boilerplate.TestBase;
+using AElf.Contracts.MultiToken;
+using AElf.Contracts.Whitelist;
 using AElf.ContractTestBase.ContractTestKit;
+using AElf.Cryptography.ECDSA;
+using AElf.CSharp.Core;
+using AElf.CSharp.Core.Extension;
+using AElf.Kernel;
+using AElf.Kernel.Blockchain.Application;
+using AElf.Kernel.SmartContract.Application;
 using AElf.Kernel.Token;
 using AElf.Standards.ACS0;
+using AElf.Types;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Threading;
-using AElf.Contracts.Whitelist;
-using AElf.Kernel.Blockchain.Application;
-using Awaken.Contracts.Swap;
-using Awaken.Contracts.Token;
-
 
 namespace AElf.Contracts.Ewell.Tests
 {
     public class EwellContractTestBase : DAppContractTestBase<EwellContractTestModule>
-    {
+    { 
+        protected int SeedNum = 0;
+        protected string SeedNFTSymbolPre = "SEED-";
+        
         // You can get address of any contract via GetAddress method, for example:
         internal readonly Address EwellContractAddress;
 
@@ -40,36 +45,19 @@ namespace AElf.Contracts.Ewell.Tests
             ECKeyPair senderKeyPair)
         {
             return Application.ServiceProvider.GetRequiredService<IContractTesterFactory>()
-                .Create<AElf.Contracts.Ewell.EwellContractContainer.EwellContractStub>(EwellContractAddress,
+                .Create<EwellContractContainer.EwellContractStub>(EwellContractAddress,
                     senderKeyPair);
         }
-
-        internal AwakenSwapContractContainer.AwakenSwapContractStub GetAwakenSwapContractStub(ECKeyPair senderKeyPair)
-        {
-            return GetTester<AwakenSwapContractContainer.AwakenSwapContractStub>(AwakenSwapContractAddress,
-                senderKeyPair);
-        }
-
-
-        internal AwakenSwapContractContainer.AwakenSwapContractStub AwakenSwapContractStub =>
-            GetAwakenSwapContractStub(SampleAccount.Accounts.First().KeyPair);
-
-        internal AElf.Contracts.MultiToken.TokenContractContainer.TokenContractStub TokenContractStub =>
+        
+        internal TokenContractImplContainer.TokenContractImplStub TokenContractStub =>
             GetTokenContractStub(SampleAccount.Accounts.First().KeyPair);
 
-        internal AElf.Contracts.MultiToken.TokenContractContainer.TokenContractStub GetTokenContractStub(
+        internal TokenContractImplContainer.TokenContractImplStub GetTokenContractStub(
             ECKeyPair senderKeyPair)
         {
             return Application.ServiceProvider.GetRequiredService<IContractTesterFactory>()
-                .Create<AElf.Contracts.MultiToken.TokenContractContainer.TokenContractStub>(tokenContractAddress,
+                .Create<TokenContractImplContainer.TokenContractImplStub>(tokenContractAddress,
                     senderKeyPair);
-        }
-
-        internal TokenContractContainer.TokenContractStub GetLpContractStub(
-            ECKeyPair senderKeyPair)
-        {
-            return Application.ServiceProvider.GetRequiredService<IContractTesterFactory>()
-                .Create<TokenContractContainer.TokenContractStub>(LpTokentContractAddress, senderKeyPair);
         }
 
         internal WhitelistContractContainer.WhitelistContractStub GetWhitelistContractStub(
@@ -87,15 +75,11 @@ namespace AElf.Contracts.Ewell.Tests
                 KernelConstants.DefaultRunnerCategory,
                 File.ReadAllBytes(typeof(EwellContract).Assembly.Location),
                 SampleAccount.Accounts[0].KeyPair));
-            AwakenSwapContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
-                KernelConstants.DefaultRunnerCategory,
-                File.ReadAllBytes(typeof(AwakenSwapContract).Assembly.Location), SampleAccount.Accounts[0].KeyPair));
-            LpTokentContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
-                KernelConstants.DefaultRunnerCategory,
-                File.ReadAllBytes(typeof(TokenContract).Assembly.Location), SampleAccount.Accounts[0].KeyPair));
             WhitelistContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
                 KernelConstants.DefaultRunnerCategory,
                 File.ReadAllBytes(typeof(WhitelistContract).Assembly.Location), SampleAccount.Accounts[0].KeyPair));
+            
+            AsyncHelper.RunSync(() => CreateSeedNftCollection(TokenContractStub));
         }
 
         private async Task<Address> DeployContractAsync(int category, byte[] code, ECKeyPair keyPair)
@@ -119,21 +103,75 @@ namespace AElf.Contracts.Ewell.Tests
         internal Address UserTomAddress => Address.FromPublicKey(UserTomKeyPair.PublicKey);
         internal Address UserLilyAddress => Address.FromPublicKey(UserLilyKeyPair.PublicKey);
 
+        internal Address DefaultAddress => Accounts[0].Address;
 
+        
         internal EwellContractContainer.EwellContractStub AdminStub =>
             GetEwellContractStub(AdminKeyPair);
 
         internal EwellContractContainer.EwellContractStub TomStub =>
             GetEwellContractStub(UserTomKeyPair);
 
-        internal MultiToken.TokenContractContainer.TokenContractStub TomTokenContractStub =>
+        internal TokenContractImplContainer.TokenContractImplStub TomTokenContractStub =>
             GetTokenContractStub(UserTomKeyPair);
-
-
-        internal Awaken.Contracts.Token.TokenContractContainer.TokenContractStub AdminLpStub =>
-            GetLpContractStub(AdminKeyPair);
-
-        internal AwakenSwapContractContainer.AwakenSwapContractStub UserTomSwapStub =>
-            GetAwakenSwapContractStub(UserTomKeyPair);
+        
+        internal async Task CreateSeedNftCollection(TokenContractImplContainer.TokenContractImplStub stub)
+        {
+            var input = new CreateInput
+            {
+                Symbol = SeedNFTSymbolPre + SeedNum,
+                Decimals = 0,
+                IsBurnable = true,
+                TokenName = "seed Collection",
+                TotalSupply = 1,
+                Issuer = DefaultAddress,
+                Owner = DefaultAddress,
+                ExternalInfo = new ExternalInfo()
+            };
+            await stub.Create.SendAsync(input);
+        }
+        
+        internal async Task<IExecutionResult<Empty>> CreateMutiTokenAsync(
+            TokenContractImplContainer.TokenContractImplStub stub,
+            CreateInput createInput)
+        {
+            await CreateSeedNftAsync(stub, createInput);
+            return await stub.Create.SendAsync(createInput);
+        }
+        
+        internal async Task<CreateInput> CreateSeedNftAsync(TokenContractImplContainer.TokenContractImplStub stub,
+            CreateInput createInput)
+        {
+            var input = BuildSeedCreateInput(createInput);
+            await stub.Create.SendAsync(input);
+            await stub.Issue.SendAsync(new IssueInput
+            {
+                Symbol = input.Symbol,
+                Amount = 1,
+                Memo = "ddd",
+                To = DefaultAddress
+            });
+            return input;
+        }
+        
+        internal CreateInput BuildSeedCreateInput(CreateInput createInput)
+        {
+            Interlocked.Increment(ref SeedNum);
+            var input = new CreateInput
+            {
+                Symbol = SeedNFTSymbolPre + SeedNum,
+                Decimals = 0,
+                IsBurnable = true,
+                TokenName = "seed token" + SeedNum,
+                TotalSupply = 1,
+                Issuer = DefaultAddress,
+                Owner = DefaultAddress,
+                ExternalInfo = new ExternalInfo(),
+                LockWhiteList = { TokenContractAddress }
+            };
+            input.ExternalInfo.Value["__seed_owned_symbol"] = createInput.Symbol;
+            input.ExternalInfo.Value["__seed_exp_time"] = TimestampHelper.GetUtcNow().AddDays(1).Seconds.ToString();
+            return input;
+        }
     }
 }
