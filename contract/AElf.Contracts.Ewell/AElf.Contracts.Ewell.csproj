@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <!-- The root namespace -->
+        <!-- Mark this project as a contract -->
+        <IsContract>true</IsContract>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    <ItemGroup>
+        <ContractMessage Include="..\..\protobuf\authority_info.proto">
+            <Link>Protobuf\Proto\reference\authority_info.proto</Link>
+        </ContractMessage>
+    </ItemGroup>
+    <ItemGroup>
+        <!-- Reference the protobuf definition of the contract -->
+        <ContractStub Include="..\..\protobuf\acs0.proto">
+            <Link>Protobuf\Proto\reference\acs0.proto</Link>
+        </ContractStub>
+        <ContractStub Include="..\..\protobuf\acs1.proto">
+            <Link>Protobuf\Proto\reference\acs1.proto</Link>
+        </ContractStub>
+        <ContractStub Include="..\..\protobuf\acs2.proto">
+            <Link>Protobuf\Proto\reference\acs2.proto</Link>
+        </ContractStub>
+        <ContractCode Include="..\..\protobuf\ewell_contract.proto">
+            <Link>Protobuf\Proto\ewell_contract.proto</Link>
+        </ContractCode>
+        <ContractReference Include="..\..\protobuf\token_contract.proto">
+            <Link>Protobuf\Proto\reference\token_contract.proto</Link>
+        </ContractReference>
+        <ContractReference Include="..\..\protobuf\whitelist_contract.proto">
+            <Link>Protobuf\Proto\reference\whitelist_contract.proto</Link>
+        </ContractReference>
+        <ContractReference Include="..\..\protobuf\awaken_swap_contract.proto">
+            <Link>Protobuf\Proto\reference\awaken_swap_contract.proto</Link>
+        </ContractReference>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="AElf.Contracts.Genesis" Version="1.2.0" />
+      <PackageReference Include="AElf.Contracts.MultiToken" Version="1.2.0" />
+      <PackageReference Include="AElf.CrossChain" Version="1.2.0" />
+      <PackageReference Include="AElf.CSharp.Core" Version="1.2.0" />
+      <PackageReference Include="AElf.Runtime.CSharp.Core" Version="1.2.0" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,451 @@
+syntax = "proto3";
+
+import "aelf/core.proto";
+import "aelf/options.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+import "acs1.proto";
+import "acs2.proto";
+import "transaction_fee.proto";
+import "authority_info.proto";
+
+option csharp_namespace = "Awaken.Contracts.AToken";
+
+service ATokenContract {
+    option (aelf.csharp_state) = "Awaken.Contracts.AToken.ATokenContractState";
+    option (aelf.base) = "acs1.proto";
+    option (aelf.base) = "acs2.proto";
+    // Actions
+    rpc Initialize(InitializeInput)returns(google.protobuf.Empty){
+    }
+  
+    rpc Create(CreateInput)returns(google.protobuf.Empty){
+    }
+    
+    rpc Mint (MintInput) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc Redeem (RedeemInput) returns (google.protobuf.Empty) {
+    }
+     
+    rpc RedeemUnderlying (RedeemUnderlyingInput) returns (google.protobuf.Empty) {
+    }
+    
+    rpc Borrow (BorrowInput) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc RepayBorrow (RepayBorrowInput) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc RepayBorrowBehalf (RepayBorrowBehalfInput) returns (google.protobuf.Empty) {
+    
+    }
+ 
+    rpc LiquidateBorrow (LiquidateBorrowInput) returns (google.protobuf.Empty) {
+    
+    }
+ 
+    rpc AddReserves (AddReservesInput) returns (google.protobuf.Empty) {
+    }
+    
+    rpc ReduceReserves(ReduceReservesInput) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc AccrueInterest(aelf.Address) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc Seize(SeizeInput) returns (google.protobuf.Empty) {
+    }
+   
+   //basic token action function
+  
+   rpc Transfer (TransferInput) returns (google.protobuf.Empty) {
+   }
+   rpc TransferFrom (TransferFromInput) returns (google.protobuf.Empty) {
+   }
+   rpc Approve (ApproveInput) returns (google.protobuf.Empty) {
+   }
+   
+    //set function
+    rpc SetAdmin (aelf.Address) returns(google.protobuf.Empty){
+    }
+
+    rpc SetComptroller(aelf.Address) returns (google.protobuf.Empty) {
+    }
+ 
+    rpc SetReserveFactor(SetReserveFactorInput) returns (google.protobuf.Empty) {
+    }
+    
+    rpc SetInterestRateModel (SetInterestRateModelInput) returns (google.protobuf.Empty) {
+    }
+
+
+    // Views
+ 
+    rpc GetUnderlyingBalance (Account) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+  
+    rpc GetAccountSnapshot (Account) returns (GetAccountSnapshotOutput) {
+        option (aelf.is_view) = true;
+    }
+  
+    rpc GetBorrowRatePerBlock (aelf.Address) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+   
+    rpc GetSupplyRatePerBlock (aelf.Address) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+  
+    rpc GetTotalBorrows (aelf.Address) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+  
+    rpc GetCurrentBorrowBalance (Account) returns (google.protobuf.Int64Value) {
+    }
+  
+    rpc GetBorrowBalanceStored (Account) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+   
+    rpc GetCurrentExchangeRate (aelf.Address) returns (google.protobuf.Int64Value) {
+    }
+ 
+    rpc GetExchangeRateStored (aelf.Address) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+   
+    rpc GetCash (aelf.Address) returns (google.protobuf.Int64Value) {
+        option (aelf.is_view) = true;
+    }
+    
+    rpc GetReserveFactor (aelf.Address) returns (google.protobuf.Int64Value){
+        option (aelf.is_view) = true;
+    }
+    rpc GetAdmin (google.protobuf.Empty) returns (aelf.Address){
+        option (aelf.is_view) = true;
+    }
+    rpc GetComptroller(google.protobuf.Empty)returns(aelf.Address){
+      option (aelf.is_view) = true;
+    }
+  
+    rpc GetInterestRateModel(aelf.Address)returns(aelf.Address){
+      option (aelf.is_view) = true;
+    }
+     
+    rpc GetInitialExchangeRate(aelf.Address)returns(google.protobuf.Int64Value){
+      option (aelf.is_view) = true;
+    }
+     
+    rpc GetTotalReserves(aelf.Address) returns(google.protobuf.Int64Value){
+    option (aelf.is_view) = true;
+    }
+  
+    rpc GetAccrualBlockNumber(aelf.Address) returns(google.protobuf.Int64Value){
+    option (aelf.is_view) = true;
+    }
+    
+    rpc GetBorrowIndex(aelf.Address)returns(aelf.BigIntValue){
+    option (aelf.is_view) = true;
+    }
+
+    rpc GetATokenAddress(google.protobuf.StringValue)returns(aelf.Address){
+    option (aelf.is_view) = true;
+    }
+    rpc GetUnderlying(aelf.Address)returns(google.protobuf.StringValue){
+    option (aelf.is_view) = true;
+    }
+
+
+   // basic token view function
+ 
+    rpc GetBalance (Account) returns (google.protobuf.Int64Value) {
+    option (aelf.is_view) = true;
+    }
+    rpc GetBalances (GetBalancesInput) returns (Balances) {
+    option (aelf.is_view) = true;
+    }
+    rpc GetAllowance (GetAllowanceInput) returns (google.protobuf.Int64Value) {
+    option (aelf.is_view) = true;
+    }
+    rpc GetTotalSupply(aelf.Address) returns (google.protobuf.Int64Value){
+    option (aelf.is_view) = true;
+    }
+    rpc GetDecimals(google.protobuf.Empty)returns(google.protobuf.Int32Value){
+    option (aelf.is_view) = true;
+    }
+}
+
+// Structs
+message Account{
+    aelf.Address a_token = 1;
+    aelf.Address user = 2;
+}
+
+message BorrowSnapshot {
+    int64 principal = 1;
+    aelf.BigIntValue interest_index = 2;
+}
+
+// Inputs
+message InitializeInput{
+    aelf.Address controller = 1;
+}
+message CreateInput{
+    string underlying_symbol = 1;
+    aelf.Address interest_rate_model = 2;
+    int64 initial_exchange_rate=3; 
+}
+message MintInput{
+    aelf.Address a_token = 1;
+    int64 mint_amount=2; 
+    string channel=3; 
+}
+
+message RedeemInput{
+    aelf.Address a_token = 1;
+    int64 amount = 2; 
+}
+message RedeemUnderlyingInput{
+    aelf.Address a_token = 1;
+    int64 amount = 2; 
+}
+message BorrowInput{
+    aelf.Address a_token = 1;
+    int64 amount = 2; 
+    string channel=3; 
+}
+message RepayBorrowInput{
+    aelf.Address a_token = 1;
+    int64 amount = 2; 
+}
+message RepayBorrowBehalfInput{
+    aelf.Address a_token = 1; 
+    int64 amount = 2; 
+    aelf.Address borrower = 3; 
+}
+message LiquidateBorrowInput{
+    aelf.Address borrow_token = 1; 
+    aelf.Address collateral_token = 2; 
+    int64 repay_amount = 3; 
+    aelf.Address borrower = 4; 
+}
+message AddReservesInput{
+      aelf.Address a_token = 1; 
+    int64 amount = 2; 
+}
+message ReduceReservesInput{
+    aelf.Address a_token = 1; 
+    int64 amount = 2; 
+}
+message SeizeInput{
+    aelf.Address collateral_token = 1; 
+    aelf.Address seizer_token = 2;
+    aelf.Address liquidator=3;
+    aelf.Address borrower=4;
+    int64 seizeTokens=5;
+}
+message SetInterestRateModelInput{
+    aelf.Address a_token = 1;
+    aelf.Address model = 2;
+}
+
+message SetReserveFactorInput{
+    aelf.Address a_token = 1;
+    int64 reserve_factor = 2;
+}
+//output
+message GetAccountSnapshotOutput{
+    int64 a_token_balance = 1;
+    int64 borrow_balance = 2;
+    int64 exchange_rate = 3;
+}
+
+ 
+// Events
+message AccrueInterest {
+    option (aelf.is_event) = true;
+    aelf.Address a_token = 1;
+    int64 cash = 2;
+    int64 interestAccumulated = 3;
+    aelf.BigIntValue borrowIndex = 4;
+    int64 total_borrows = 5;
+    int64 borrow_rate_per_block = 6;
+    int64 supply_rate_per_block = 7;
+}
+message Mint{
+    option (aelf.is_event) = true;
+    string underlying = 1;
+    aelf.Address a_token = 2;
+    int64 underlying_amount = 3;
+    int64 a_token_amount = 4;
+    aelf.Address sender =5;
+    string channel = 6;
+}
+message Redeem {
+    option (aelf.is_event) = true;
+    string underlying = 1;
+    aelf.Address a_token = 2;
+    int64 underlying_amount = 3;
+    int64 a_token_amount = 4;
+    aelf.Address sender =5;
+}
+message Borrow{
+    option (aelf.is_event) = true;
+    aelf.Address a_token = 1;
+    aelf.Address borrower = 2;
+    int64 amount = 3;
+    int64 borrow_balance = 4;
+    int64 total_borrows = 5;
+  //  string borrow_rate = 6;
+}
+message RepayBorrow{
+    option (aelf.is_event) = true;
+    aelf.Address a_token = 1;
+    aelf.Address payer = 2;
+    aelf.Address borrower = 3;
+    int64 amount = 4;
+    int64 borrow_balance = 5;
+    int64 total_borrows = 6;
+}
+message LiquidateBorrow{
+    option (aelf.is_event) = true;
+    aelf.Address repay_a_token = 1;
+    aelf.Address liquidator = 2;
+    aelf.Address borrower = 3;
+    int64 repay_amount = 4;
+    aelf.Address seize_a_token = 5;
+    int64 seize_token_amount = 6;
+}
+
+message AdminChanged{
+    option (aelf.is_event) = true;
+    aelf.Address old_admin = 1;
+    aelf.Address new_admin = 2;
+}
+message ReserveFactorChanged{
+    option (aelf.is_event) = true;
+    int64 old_reserve_factor = 1;
+    int64 new_reserve_factor = 2;
+    aelf.Address a_token= 3;
+}
+message ReservesAdded{
+    option (aelf.is_event) = true;
+    string underlying = 1;
+    aelf.Address a_token = 2;
+    int64 add_amount = 3;
+    int64 total_reserves = 4;
+    aelf.Address sender = 5;
+}
+message ReservesReduced{
+    option (aelf.is_event) = true;
+    string underlying = 1;
+    aelf.Address a_token = 2;
+    int64 reduce_amount = 3;
+    int64 total_reserves = 4;
+    aelf.Address sender = 5;
+}
+
+
+//basic token 
+// Structs
+ 
+
+message CallbackInfo {
+    aelf.Address contract_address = 1;
+    string method_name = 2;
+}
+
+message Balance {
+    string symbol = 1;
+    aelf.Address owner = 2;
+    int64 amount = 3;
+}
+
+message Balances {
+    repeated Balance value = 1;
+}
+
+// Inputs
+
+ 
+
+message TransferInput {
+    aelf.Address to = 1;
+    string symbol = 2;
+    int64 amount = 3;
+    string memo = 4;
+}
+
+message TransferFromInput {
+    aelf.Address from = 1;
+    aelf.Address to = 2;
+    string symbol = 3;
+    int64 amount = 4;
+    string memo = 5;
+}
+
+message ApproveInput {
+    aelf.Address spender = 1;
+    string symbol = 2;
+    int64 amount = 3;
+}
+ 
+
+ 
+
+message GetBalancesInput {
+    repeated string symbols = 1;
+    aelf.Address owner = 2;
+}
+
+message GetAllowanceInput {
+    string symbol = 1;
+    aelf.Address owner = 2;
+    aelf.Address spender = 3;
+}
+
+ 
+
+// Events
+
+message Transferred {
+    option (aelf.is_event) = true;
+    aelf.Address from = 1 [(aelf.is_indexed) = true];
+    aelf.Address to = 2 [(aelf.is_indexed) = true];
+    string symbol = 3 [(aelf.is_indexed) = true];
+    int64 amount = 4;
+    string memo = 5;
+}
+
+message Approved {
+    option (aelf.is_event) = true;
+    aelf.Address owner = 1 [(aelf.is_indexed) = true];
+    aelf.Address spender = 2 [(aelf.is_indexed) = true];
+    string symbol = 3 [(aelf.is_indexed) = true];
+    int64 amount = 4;
+}
+
+message UnApproved {
+    option (aelf.is_event) = true;
+    aelf.Address owner = 1 [(aelf.is_indexed) = true];
+    aelf.Address spender = 2 [(aelf.is_indexed) = true];
+    string symbol = 3 [(aelf.is_indexed) = true];
+    int64 amount = 4;
+}
+
+
+message TokenCreated {
+    option (aelf.is_event) = true;
+    string symbol = 1;
+    string token_name = 2;
+    int32 decimals = 3;
+    aelf.Address a_token = 4;
+    string underlying = 5;
+    aelf.Address token_contract = 6;
+    aelf.Address controller = 7;
+}
+
