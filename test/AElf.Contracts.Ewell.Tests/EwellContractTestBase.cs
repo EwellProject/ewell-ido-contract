@@ -101,11 +101,7 @@ namespace AElf.Contracts.Ewell.Tests
 
         internal Address AdminAddress => Address.FromPublicKey(AdminKeyPair.PublicKey);
         internal Address UserTomAddress => Address.FromPublicKey(UserTomKeyPair.PublicKey);
-        internal Address UserLilyAddress => Address.FromPublicKey(UserLilyKeyPair.PublicKey);
 
-        internal Address DefaultAddress => Accounts[0].Address;
-
-        
         internal EwellContractContainer.EwellContractStub AdminStub =>
             GetEwellContractStub(AdminKeyPair);
 
@@ -124,8 +120,8 @@ namespace AElf.Contracts.Ewell.Tests
                 IsBurnable = true,
                 TokenName = "seed Collection",
                 TotalSupply = 1,
-                Issuer = DefaultAddress,
-                Owner = DefaultAddress,
+                Issuer = AdminAddress,
+                Owner = AdminAddress,
                 ExternalInfo = new ExternalInfo()
             };
             await stub.Create.SendAsync(input);
@@ -149,7 +145,7 @@ namespace AElf.Contracts.Ewell.Tests
                 Symbol = input.Symbol,
                 Amount = 1,
                 Memo = "ddd",
-                To = DefaultAddress
+                To = AdminAddress
             });
             return input;
         }
@@ -164,14 +160,25 @@ namespace AElf.Contracts.Ewell.Tests
                 IsBurnable = true,
                 TokenName = "seed token" + SeedNum,
                 TotalSupply = 1,
-                Issuer = DefaultAddress,
-                Owner = DefaultAddress,
+                Issuer = AdminAddress,
+                Owner = AdminAddress,
                 ExternalInfo = new ExternalInfo(),
                 LockWhiteList = { TokenContractAddress }
             };
             input.ExternalInfo.Value["__seed_owned_symbol"] = createInput.Symbol;
             input.ExternalInfo.Value["__seed_exp_time"] = TimestampHelper.GetUtcNow().AddDays(1).Seconds.ToString();
             return input;
+        }
+        
+        protected async Task<long> GetBalanceAsync(string symbol, Address owner)
+        {
+            var balanceResult = await TokenContractStub.GetBalance.CallAsync(
+                new GetBalanceInput
+                {
+                    Owner = owner,
+                    Symbol = symbol
+                });
+            return balanceResult.Balance;
         }
     }
 }

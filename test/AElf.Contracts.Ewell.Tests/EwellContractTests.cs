@@ -114,19 +114,22 @@ namespace AElf.Contracts.Ewell
             await RegisterTest();
             
             blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(3));
+            //var balance1 = await GetBalanceAsync("ELF", UserTomAddress);
             await TomTokenContractStub.Approve.SendAsync(new ApproveInput()
             {
                 Spender = EwellContractAddress,
                 Amount = 10000,
                 Symbol = "ELF"
             });
+            //var balance1 = await GetBalanceAsync("ELF", UserTomAddress);
             await TomStub.Invest.SendAsync(new InvestInput()
             {
                 ProjectId = projectId0,
                 Currency = "ELF",
                 InvestAmount = investAmount
             });
-
+            
+            //after user invest and check 
             var investDetail = await TomStub.GetInvestDetail.CallAsync(new GetInvestDetailInput()
             {
                 ProjectId = projectId0,
@@ -414,7 +417,8 @@ namespace AElf.Contracts.Ewell
             var collectionInfo = NftCollectionInfo("TEST", "TEST Collection");
             var createCollectionRes = await CreateNftCollectionAsync(collectionInfo);
             createCollectionRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
-            var createNftRes = await CreateNftAsync(collectionInfo.Symbol, NftInfo("1", "TEST 1 symbol"));
+            var testNftInfo = NftInfo("1", "TEST 1 symbol");
+            var createNftRes = await CreateNftAsync(collectionInfo.Symbol, testNftInfo);
             createNftRes.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
         }
 
@@ -441,6 +445,15 @@ namespace AElf.Contracts.Ewell
                 Symbol = TestSymbol
             });
             balance.Balance.ShouldBe(100000000000000);
+            
+            //Recharge
+            await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
+            {
+                Amount = 100000000000,
+                Symbol = "ELF",
+                Memo = "Recharge",
+                To = UserTomAddress
+            });
         }
 
         private async Task<IExecutionResult<Empty>> CreateNftAsync(string colllectionSymbol, TokenInfo nftInfo)
