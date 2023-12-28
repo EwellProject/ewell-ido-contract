@@ -42,9 +42,6 @@
         <ContractStub Include="..\..\protobuf\acs2.proto">
             <Link>Protobuf\Proto\acs2.proto</Link>
         </ContractStub>
-        <ContractStub Include="..\..\protobuf\transaction_fee.proto">
-            <Link>Protobuf\Proto\transaction_fee.proto</Link>
-        </ContractStub>
         <ContractStub Include="..\..\protobuf\token_contract.proto">
             <Link>Protobuf\Proto\token_contract.proto</Link>
         </ContractStub>

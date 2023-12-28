@@ -115,6 +115,7 @@ message RegisterInput {
     int32 first_distribute_proportion = 19;
     int32 rest_distribute_proportion = 20;
     int64 period_duration = 21;
+    google.protobuf.Timestamp token_release_time = 22;
 }
 
 message UpdateAdditionalInfoInput{
