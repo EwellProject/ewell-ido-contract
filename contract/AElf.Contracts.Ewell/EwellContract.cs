@@ -26,6 +26,7 @@ namespace AElf.Contracts.Ewell
             ValidTokenSymbol(input.AcceptedCurrency);
             Assert(input.MaxSubscription > input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
+            Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= ProportionMax,"Invalid distributeProportion input");
             var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(Mantissa).Div(input.PreSalePrice).Value);
             Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");
@@ -52,7 +53,8 @@ namespace AElf.Contracts.Ewell
                 Creator = Context.Sender,
                 ToRaisedAmount = toRaisedAmount,
                 Enabled = true,
-                VirtualAddressHash = virtualAddressHash
+                VirtualAddressHash = virtualAddressHash,
+                TokenReleaseTime = input.TokenReleaseTime
             };
             State.ProjectInfoMap[id] = projectInfo;
             var listInfo = new ProjectListInfo()
@@ -227,9 +229,9 @@ namespace AElf.Contracts.Ewell
             AdminCheck();
             var projectListInfo = State.ProjectListInfoMap[input];
             Assert(projectListInfo.LatestPeriod < projectListInfo.TotalPeriod,"Insufficient period");
-            var nextPeriodTime =
-                projectInfo.EndTime.Seconds.Add(projectListInfo.PeriodDuration.Mul(projectListInfo.LatestPeriod));
-            Assert(Context.CurrentBlockTime.Seconds >= nextPeriodTime,"Time is not ready");
+            var currentTokenReleaseTime =
+                projectInfo.TokenReleaseTime.Seconds.Add(projectListInfo.PeriodDuration.Mul(projectListInfo.LatestPeriod));
+            Assert(Context.CurrentBlockTime.Seconds >= currentTokenReleaseTime,"Time is not ready");
             var newPeriod = State.ProjectListInfoMap[input].LatestPeriod.Add(1);
             State.ProjectListInfoMap[input].LatestPeriod = newPeriod;
             Context.Fire(new PeriodUpdated()
@@ -402,7 +404,7 @@ namespace AElf.Contracts.Ewell
             AdminCheck();
             var projectListInfo = State.ProjectListInfoMap[input];
             Assert(!projectListInfo.IsWithdraw,"Already withdraw" );
-            Assert(Context.CurrentBlockTime >= projectInfo.EndTime,"Time is not ready");
+            Assert(Context.CurrentBlockTime >= projectInfo.TokenReleaseTime,"Time is not ready");
             var withdrawAmount = projectInfo.CurrentRaisedAmount;
             if (withdrawAmount > 0)
             {

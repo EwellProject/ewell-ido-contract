@@ -191,6 +191,7 @@ message ProjectInfo{
     int64 current_raised_amount = 16;//已募集金额
     bool enabled = 17; //是否取消众筹
     aelf.Hash virtual_address_hash = 18;
+    google.protobuf.Timestamp token_release_time = 19;
 } 
 message ProjectListInfo{
     aelf.Hash project_id = 1;

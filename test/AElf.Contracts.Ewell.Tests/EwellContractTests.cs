@@ -75,7 +75,8 @@ namespace AElf.Contracts.Ewell
                 TotalPeriod = 1,
                 FirstDistributeProportion = 100_000000,
                 RestDistributeProportion = 0,
-                PeriodDuration = 0
+                PeriodDuration = 0,
+                TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30)
             };
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
 
@@ -150,6 +151,14 @@ namespace AElf.Contracts.Ewell
                 ProjectId = projectId0,
                 User = UserTomAddress
             });
+            
+            //check repeat Claim
+            await TomStub.Claim.SendAsync(new ClaimInput()
+            {
+                ProjectId = projectId0,
+                User = UserTomAddress
+            });
+            
             var balance = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
                 Owner = UserTomAddress,
@@ -393,7 +402,8 @@ namespace AElf.Contracts.Ewell
                 TotalPeriod = 1,
                 FirstDistributeProportion = 100_000000,
                 RestDistributeProportion = 0,
-                PeriodDuration = 0
+                PeriodDuration = 0,
+                TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30)
             };
 
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
