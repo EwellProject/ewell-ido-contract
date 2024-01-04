@@ -280,6 +280,7 @@ message ProjectRegistered{
     int32 rest_distribute_proportion = 23;
     int64 period_duration = 24;
     aelf.Address virtual_address = 25;
+    google.protobuf.Timestamp token_release_time = 26;
 }
 message NewWhitelistIdSet{
     option (aelf.is_event) = true;

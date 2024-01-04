@@ -120,7 +120,8 @@ namespace AElf.Contracts.Ewell
                 Creator = Context.Sender,
                 FirstDistributeProportion = input.FirstDistributeProportion,
                 RestDistributeProportion = input.RestDistributeProportion,
-                PeriodDuration = input.PeriodDuration
+                PeriodDuration = input.PeriodDuration,
+                TokenReleaseTime = input.TokenReleaseTime
             });
             return new Empty();
         }
