@@ -18,6 +18,9 @@
     </ItemGroup>
     <ItemGroup>
         <!-- Reference the protobuf definition of the contract -->
+        <ContractStub Include="..\..\protobuf\acs12.proto">
+            <Link>Protobuf\Proto\reference\acs12.proto</Link>
+        </ContractStub>
         <ContractStub Include="..\..\protobuf\acs0.proto">
             <Link>Protobuf\Proto\reference\acs0.proto</Link>
         </ContractStub>

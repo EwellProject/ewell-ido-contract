@@ -1,8 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using AElf;
+using AElf.Contracts.Ewell;
 using AElf.Contracts.Ewell.Tests;
 using AElf.Contracts.MultiToken;
+using AElf.Contracts.Whitelist;
 using AElf.CSharp.Core;
 using AElf.CSharp.Core.Extension;
 using AElf.Types;
@@ -10,7 +13,7 @@ using Google.Protobuf.WellKnownTypes;
 using Shouldly;
 using Xunit;
 
-namespace AElf.Contracts.Ewell
+namespace Awaken.Contracts.Ewell
 {
     public class EwellContractTests : EwellContractTestBase
     {
@@ -55,7 +58,7 @@ namespace AElf.Contracts.Ewell
                 EndTime = blockTimeProvider.GetBlockTime().AddSeconds(30),
                 MinSubscription = 10,
                 MaxSubscription = 100,
-                IsEnableWhitelist = false,
+                IsEnableWhitelist = true,
                 IsBurnRestToken = true,
                 AdditionalInfo = new AdditionalInfo(),
                 PublicSalePrice = 2_000000000,
@@ -84,9 +87,13 @@ namespace AElf.Contracts.Ewell
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
                     .NonIndexed)
                 .ProjectId;
+            var whitelistIdLog = WhitelistCreated.Parser
+                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))
+                    .NonIndexed)
+                .WhitelistId;
 
             var whitelistId = await AdminStub.GetWhitelistId.CallAsync(projectId);
-            whitelistId.ShouldBe(HashHelper.ComputeFrom(0));
+            whitelistId.ShouldBe(whitelistIdLog);
             projectId0 = projectId;
         }
 
@@ -106,13 +113,31 @@ namespace AElf.Contracts.Ewell
                 ProjectId = projectId0,
                 Users = { UserTomAddress }
             });
+            
+            await AdminStub.AddWhitelists.SendAsync(new AddWhitelistsInput()
+            {
+                ProjectId = projectId0,
+                Users = { UserTomAddress }
+            });
+        }
+        
+        [Fact]
+        public async Task AddWhitelistsTest()
+        {
+            await RegisterTest();
+
+            await AdminStub.AddWhitelists.SendAsync(new AddWhitelistsInput()
+            {
+                ProjectId = projectId0,
+                Users = { UserTomAddress }
+            });
         }
 
         [Fact]
         public async Task InvestTest()
         {
             var investAmount = 100;
-            await RegisterTest();
+            await AddWhitelistsTest();
             
             blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(3));
             //var balance1 = await GetBalanceAsync("ELF", UserTomAddress);
@@ -412,9 +437,13 @@ namespace AElf.Contracts.Ewell
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
                     .NonIndexed)
                 .ProjectId;
+            var whitelistIdLog = WhitelistCreated.Parser
+                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))
+                    .NonIndexed)
+                .WhitelistId;
 
             var whitelistId = await AdminStub.GetWhitelistId.CallAsync(projectId);
-            whitelistId.ShouldBe(HashHelper.ComputeFrom(0));
+            whitelistId.ShouldBe(whitelistIdLog);
             projectId0 = projectId;
 
             var virtualAddress = await AdminStub.GetProjectAddressByProjectHash.CallAsync(projectId0);

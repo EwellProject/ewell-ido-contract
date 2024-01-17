@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AElf.Boilerplate.TestBase.SmartContractNameProviders;
 using AElf.ContractTestBase;
 using AElf.Kernel.SmartContract.Application;
 using AElf.Types;
@@ -11,6 +12,7 @@ namespace AElf.Boilerplate.TestBase
         {
             var list = base.GetDeployContractNameList();
             list.Add(DAppSmartContractAddressNameProvider.Name);
+            list.Add(WhitelistSmartContractAddressNameProvider.Name);
             return list;
         }
     }
@@ -21,6 +23,7 @@ namespace AElf.Boilerplate.TestBase
         {
             var list = base.GetDeployContractNameList();
             list.Add(DAppSmartContractAddressNameProvider.Name);
+            list.Add(WhitelistSmartContractAddressNameProvider.Name);
             return list;
         }
     }
