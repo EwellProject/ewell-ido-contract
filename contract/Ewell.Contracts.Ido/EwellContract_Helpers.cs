@@ -1,11 +1,11 @@
+using AElf;
 using AElf.Contracts.MultiToken;
-using AElf.Contracts.Whitelist;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
 using AElf.Types;
-using Google.Protobuf.Collections;
+using Ewell.Contracts.Whitelist;
 
-namespace AElf.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public partial class EwellContract
     {

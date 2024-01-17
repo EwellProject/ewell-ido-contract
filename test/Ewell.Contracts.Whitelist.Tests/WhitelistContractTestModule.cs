@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp;
 using Volo.Abp.Modularity;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 [DependsOn(typeof(MainChainDAppContractTestModule))]
 public class WhitelistContractTestModule : MainChainDAppContractTestModule
@@ -28,7 +28,7 @@ public class WhitelistContractTestModule : MainChainDAppContractTestModule
         {
             {
                 new WhitelistContractInitializationProvider().ContractCodeName,
-                File.ReadAllBytes(typeof(WhitelistContract).Assembly.Location)
+                File.ReadAllBytes(typeof(Ewell.Contracts.Whitelist.WhitelistContract).Assembly.Location)
             }
         };
         contractCodeProvider.Codes = contractCodes;

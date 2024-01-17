@@ -1,7 +1,7 @@
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
 
-namespace AElf.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public partial class EwellContract
     {

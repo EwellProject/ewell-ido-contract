@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AElf.Boilerplate.TestBase;
 using AElf.Contracts.MultiToken;
-using AElf.Contracts.Whitelist;
 using AElf.ContractTestBase.ContractTestKit;
 using AElf.Cryptography.ECDSA;
 using AElf.CSharp.Core;
@@ -15,12 +14,14 @@ using AElf.Kernel.SmartContract.Application;
 using AElf.Kernel.Token;
 using AElf.Standards.ACS0;
 using AElf.Types;
+using Ewell.Contracts.Whitelist;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Threading;
+using WhitelistContract = Ewell.Contracts.Whitelist.WhitelistContract;
 
-namespace AElf.Contracts.Ewell.Tests
+namespace Ewell.Contracts.Ido
 {
     public class EwellContractTestBase : DAppContractTestBase<EwellContractTestModule>
     { 
@@ -73,7 +74,7 @@ namespace AElf.Contracts.Ewell.Tests
             blockTimeProvider = Application.ServiceProvider.GetRequiredService<IBlockTimeProvider>();
             EwellContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
                 KernelConstants.DefaultRunnerCategory,
-                File.ReadAllBytes(typeof(EwellContract).Assembly.Location),
+                File.ReadAllBytes(typeof(global::Ewell.Contracts.Ido.EwellContract).Assembly.Location),
                 SampleAccount.Accounts[0].KeyPair));
             WhitelistContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
                 KernelConstants.DefaultRunnerCategory,

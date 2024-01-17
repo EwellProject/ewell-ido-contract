@@ -1,10 +1,11 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AElf;
 using AElf.Types;
 using Shouldly;
 using Xunit;
 
-namespace AElf.Contracts.Whitelist
+namespace Ewell.Contracts.Whitelist
 {
     public partial class WhitelistContractTests
     {

@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
+using AElf;
 using AElf.Contracts.Whitelist.Extensions;
 using AElf.Sdk.CSharp;
 using AElf.Types;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 public partial class WhitelistContract
 {

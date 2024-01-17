@@ -1,12 +1,13 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AElf;
 using AElf.Types;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Shouldly;
 using Xunit;
 
-namespace AElf.Contracts.Whitelist
+namespace Ewell.Contracts.Whitelist
 {
     public partial class WhitelistContractTests : WhitelistContractTestBase
     {
@@ -256,17 +257,17 @@ namespace AElf.Contracts.Whitelist
                     {
                         new ExtraInfo
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User1Address}}
+                            AddressList = new AddressList() {Value = {User1Address}}
                         },
                         new ExtraInfo
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User3Address}}
+                            AddressList = new AddressList() {Value = {User3Address}}
                         }
                     }
                 },
                 IsCloneable = true,
                 Remark = "new whitelist test",
-                ManagerList = new Whitelist.AddressList()
+                ManagerList = new AddressList()
                 {
                     Value = {User4Address}
                 },
@@ -298,7 +299,7 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfo
                             {
-                                AddressList = new Whitelist.AddressList()
+                                AddressList = new AddressList()
                                     {Value = {User1Address, User1Address, User2Address}},
                                 Info = new TagInfo()
                                 {
@@ -308,7 +309,7 @@ namespace AElf.Contracts.Whitelist
                             },
                             new ExtraInfo
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User2Address}},
+                                AddressList = new AddressList() {Value = {User2Address}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO3",
@@ -319,7 +320,7 @@ namespace AElf.Contracts.Whitelist
                     },
                     IsCloneable = true,
                     Remark = "new whitelist test",
-                    ManagerList = new Whitelist.AddressList()
+                    ManagerList = new AddressList()
                     {
                         Value = {User4Address}
                     },
@@ -343,7 +344,7 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfo
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User1Address}},
+                                AddressList = new AddressList() {Value = {User1Address}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO1",
@@ -352,7 +353,7 @@ namespace AElf.Contracts.Whitelist
                             },
                             new ExtraInfo
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User2Address}},
+                                AddressList = new AddressList() {Value = {User2Address}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO1",
@@ -363,7 +364,7 @@ namespace AElf.Contracts.Whitelist
                     },
                     IsCloneable = true,
                     Remark = "new whitelist test",
-                    ManagerList = new Whitelist.AddressList()
+                    ManagerList = new AddressList()
                     {
                         Value = {User4Address}
                     },
@@ -429,7 +430,7 @@ namespace AElf.Contracts.Whitelist
                     TagName = "INFO2",
                     Info = Info2
                 },
-                AddressList = new Whitelist.AddressList()
+                AddressList = new AddressList()
                 {
                     Value = {User5Address, User6Address}
                 }
@@ -482,7 +483,7 @@ namespace AElf.Contracts.Whitelist
                     },
                     WhitelistId = whitelistId,
                     ProjectId = _projectId,
-                    AddressList = new Whitelist.AddressList()
+                    AddressList = new AddressList()
                     {
                         Value = {User1Address, User4Address}
                     }
@@ -517,7 +518,7 @@ namespace AElf.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {User1Address}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -569,7 +570,7 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User1Address, User2Address}},
+                                AddressList = new AddressList() {Value = {User1Address, User2Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -592,12 +593,12 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User5Address}},
+                                AddressList = new AddressList() {Value = {User5Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User6Address}},
+                                AddressList = new AddressList() {Value = {User6Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -649,7 +650,7 @@ namespace AElf.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {User1Address}},
                             Id = CalculateId(whitelistId, _projectId, "INFO1")
                         }
                     });
@@ -680,11 +681,11 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User2Address}}
+                                AddressList = new AddressList() {Value = {User2Address}}
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User4Address, User5Address}}
+                                AddressList = new AddressList() {Value = {User4Address, User5Address}}
                             }
                         }
                     }
@@ -735,7 +736,7 @@ namespace AElf.Contracts.Whitelist
                         Value = { 
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList(){Value = { User1Address,User1Address }}
+                                AddressList = new AddressList(){Value = { User1Address,User1Address }}
                             }
                         }
                     }
@@ -756,12 +757,12 @@ namespace AElf.Contracts.Whitelist
                          Value = { 
                              new ExtraInfoId()
                              {
-                                 AddressList  = new Whitelist.AddressList(){Value = { User1Address }},
+                                 AddressList  = new AddressList(){Value = { User1Address }},
                                  Id = CalculateId(whitelistId,_projectId,"INFO3")
                             },
                             new ExtraInfoId() 
                             {
-                                AddressList  = new Whitelist.AddressList(){Value = { User2Address }},
+                                AddressList  = new AddressList(){Value = { User2Address }},
                                 Id = CalculateId(whitelistId,_projectId,"INFO1")
                             }
                         }
@@ -784,12 +785,12 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User5Address}},
+                                AddressList = new AddressList() {Value = {User5Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO6")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User6Address}},
+                                AddressList = new AddressList() {Value = {User6Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -812,12 +813,12 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User2Address, User1Address}},
+                                AddressList = new AddressList() {Value = {User2Address, User1Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User3Address}},
+                                AddressList = new AddressList() {Value = {User3Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO3")
                             }
                         }
@@ -853,11 +854,11 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User1Address}}
+                                AddressList = new AddressList() {Value = {User1Address}}
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User3Address}}
+                                AddressList = new AddressList() {Value = {User3Address}}
                             }
                         }
                     }
@@ -901,7 +902,7 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {DefaultAddress}},
+                                AddressList = new AddressList() {Value = {DefaultAddress}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -924,7 +925,7 @@ namespace AElf.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new Whitelist.AddressList() {Value = {User1Address, User1Address}},
+                                AddressList = new AddressList() {Value = {User1Address, User1Address}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -940,7 +941,7 @@ namespace AElf.Contracts.Whitelist
             await WhitelistContractStub.RemoveInfoFromWhitelist.SendAsync(new RemoveInfoFromWhitelistInput
             {
                 WhitelistId = whitelistId,
-                AddressList = new Whitelist.AddressList
+                AddressList = new AddressList
                 {
                     Value = {User1Address, User3Address, User5Address}
                 }
@@ -977,7 +978,7 @@ namespace AElf.Contracts.Whitelist
             await WhitelistContractStub.RemoveInfoFromWhitelist.SendAsync(new RemoveInfoFromWhitelistInput
             {
                 WhitelistId = whitelistId,
-                AddressList = new Whitelist.AddressList
+                AddressList = new AddressList
                 {
                     Value = {User1Address, User3Address, User5Address}
                 }
@@ -1052,7 +1053,7 @@ namespace AElf.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new Whitelist.AddressList() {Value = {User2Address, User1Address}},
+                        AddressList = new AddressList() {Value = {User2Address, User1Address}},
                         Id = CalculateId(whitelistId, _projectId, "INFO3")
                     }
                 });
@@ -1100,7 +1101,7 @@ namespace AElf.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User2Address}},
+                            AddressList = new AddressList() {Value = {User2Address}},
                             Id = CalculateId(whitelistId, _projectId, "INFO1")
                         }
                     });
@@ -1113,7 +1114,7 @@ namespace AElf.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User2Address}},
+                            AddressList = new AddressList() {Value = {User2Address}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -1126,7 +1127,7 @@ namespace AElf.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new Whitelist.AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {User1Address}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -1144,7 +1145,7 @@ namespace AElf.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new Whitelist.AddressList() {Value = {DefaultAddress}},
+                        AddressList = new AddressList() {Value = {DefaultAddress}},
                         Id = CalculateId(whitelistId, _projectId, "INFO1")
                     }
                 });
@@ -1161,7 +1162,7 @@ namespace AElf.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new Whitelist.AddressList() {Value = {User2Address}},
+                        AddressList = new AddressList() {Value = {User2Address}},
                         Id = CalculateId(whitelistId, _projectId, "INFO5")
                     }
                 });
@@ -1196,7 +1197,7 @@ namespace AElf.Contracts.Whitelist
             await WhitelistContractStub.AddManagers.SendAsync(new AddManagersInput()
             {
                 WhitelistId = whitelistId,
-                ManagerList = new Whitelist.AddressList()
+                ManagerList = new AddressList()
                 {
                     Value = {User5Address}
                 }
@@ -1228,7 +1229,7 @@ namespace AElf.Contracts.Whitelist
             var executionResult = await WhitelistContractStub.AddManagers.SendWithExceptionAsync(new AddManagersInput()
             {
                 WhitelistId = whitelistId,
-                ManagerList = new Whitelist.AddressList()
+                ManagerList = new AddressList()
                 {
                     Value = {User4Address}
                 }
@@ -1243,7 +1244,7 @@ namespace AElf.Contracts.Whitelist
             await WhitelistContractStub.RemoveManagers.SendAsync(new RemoveManagersInput()
             {
                 WhitelistId = whitelistId,
-                ManagerList = new Whitelist.AddressList()
+                ManagerList = new AddressList()
                 {
                     Value = {User4Address}
                 }

@@ -1,4 +1,4 @@
-namespace AElf.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public partial class EwellContract
     {

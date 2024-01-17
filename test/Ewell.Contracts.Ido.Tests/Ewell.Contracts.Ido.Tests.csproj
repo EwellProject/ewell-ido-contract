@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <RootNamespace>Awaken.Contracts.Ewell</RootNamespace>
+        <RootNamespace>Ewell.Contracts.Ido</RootNamespace>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -57,8 +57,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\contract\AElf.Contracts.Ewell\AElf.Contracts.Ewell.csproj" />
-        <ProjectReference Include="..\..\contract\AElf.Contracts.Whitelist\AElf.Contracts.Whitelist.csproj" />
+        <ProjectReference Include="..\..\contract\Ewell.Contracts.Ido\Ewell.Contracts.Ido.csproj" />
+        <ProjectReference Include="..\..\contract\Ewell.Contracts.Whitelist\Ewell.Contracts.Whitelist.csproj" />
         <ProjectReference Include="..\..\src\AElf.Boilerplate.TestBase\AElf.Boilerplate.TestBase.csproj" />
     </ItemGroup>
 

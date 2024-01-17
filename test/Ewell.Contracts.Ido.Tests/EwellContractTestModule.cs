@@ -2,7 +2,7 @@ using AElf.Boilerplate.TestBase;
 using AElf.Kernel.SmartContract;
 using Volo.Abp.Modularity;
 
-namespace AElf.Contracts.Ewell.Tests
+namespace Ewell.Contracts.Ido
 {
     [DependsOn(typeof(MainChainDAppContractTestModule))]
     public class EwellContractTestModule: MainChainDAppContractTestModule

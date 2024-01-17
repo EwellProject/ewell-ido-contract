@@ -1,6 +1,6 @@
 ﻿using Google.Protobuf.WellKnownTypes;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 public partial class WhitelistContract : WhitelistContractContainer.WhitelistContractBase
 {

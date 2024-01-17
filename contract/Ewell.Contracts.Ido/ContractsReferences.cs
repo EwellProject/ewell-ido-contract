@@ -1,9 +1,9 @@
 
-namespace AElf.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public partial class EwellContractState
     {
-       internal  AElf.Contracts.Whitelist.WhitelistContractContainer.WhitelistContractReferenceState WhitelistContract
+       internal  Whitelist.WhitelistContractContainer.WhitelistContractReferenceState WhitelistContract
        {
            get;
            set;

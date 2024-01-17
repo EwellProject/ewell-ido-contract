@@ -20,15 +20,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Boilerplate.TestBase",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Boilerplate.SystemTransactionGenerator", "src\AElf.Boilerplate.SystemTransactionGenerator\AElf.Boilerplate.SystemTransactionGenerator.csproj", "{217599C5-2CF0-411E-97B5-5657739CEE5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AElf.Contracts.Ewell.Tests", "test\AElf.Contracts.Ewell.Tests\AElf.Contracts.Ewell.Tests.csproj", "{3631B538-C617-4FCE-9C9B-1D1B5F290A7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ewell.Contracts.Ido.Tests", "test\Ewell.Contracts.Ido.Tests\Ewell.Contracts.Ido.Tests.csproj", "{3631B538-C617-4FCE-9C9B-1D1B5F290A7F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Boilerplate.ContractPatcher", "src\AElf.Boilerplate.ContractPatcher\AElf.Boilerplate.ContractPatcher.csproj", "{DCC207EA-842A-4B54-858B-295CAA8947D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Contracts.Whitelist", "contract\AElf.Contracts.Whitelist\AElf.Contracts.Whitelist.csproj", "{A1F678F4-0C1D-423A-8AFC-7C37E7C8503D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.Whitelist", "contract\Ewell.Contracts.Whitelist\Ewell.Contracts.Whitelist.csproj", "{A1F678F4-0C1D-423A-8AFC-7C37E7C8503D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Contracts.Ewell", "contract\AElf.Contracts.Ewell\AElf.Contracts.Ewell.csproj", "{574138C4-06C1-4153-B5D3-9666404BC26E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.Ido", "contract\Ewell.Contracts.Ido\Ewell.Contracts.Ido.csproj", "{574138C4-06C1-4153-B5D3-9666404BC26E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AElf.Contracts.Whitelist.Tests", "test\AElf.Contracts.Whitelist.Tests\AElf.Contracts.Whitelist.Tests.csproj", "{715A8BF4-29B8-47AE-A84F-349F333AA845}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.Whitelist.Tests", "test\Ewell.Contracts.Whitelist.Tests\Ewell.Contracts.Whitelist.Tests.csproj", "{715A8BF4-29B8-47AE-A84F-349F333AA845}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

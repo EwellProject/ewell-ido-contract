@@ -3,7 +3,7 @@ using AElf.Sdk.CSharp;
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 public partial class WhitelistContract
 {

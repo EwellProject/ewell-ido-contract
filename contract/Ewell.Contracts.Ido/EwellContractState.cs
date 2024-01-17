@@ -1,7 +1,7 @@
 using AElf.Sdk.CSharp.State;
 using AElf.Types;
 
-namespace AElf.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public partial class EwellContractState : ContractState
     {

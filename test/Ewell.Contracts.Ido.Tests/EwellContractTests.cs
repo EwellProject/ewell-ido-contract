@@ -2,18 +2,16 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf;
-using AElf.Contracts.Ewell;
-using AElf.Contracts.Ewell.Tests;
 using AElf.Contracts.MultiToken;
-using AElf.Contracts.Whitelist;
 using AElf.CSharp.Core;
 using AElf.CSharp.Core.Extension;
 using AElf.Types;
+using Ewell.Contracts.Whitelist;
 using Google.Protobuf.WellKnownTypes;
 using Shouldly;
 using Xunit;
 
-namespace Awaken.Contracts.Ewell
+namespace Ewell.Contracts.Ido
 {
     public class EwellContractTests : EwellContractTestBase
     {

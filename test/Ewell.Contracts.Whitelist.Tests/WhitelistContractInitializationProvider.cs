@@ -4,7 +4,7 @@ using AElf.Kernel.SmartContract.Application;
 using AElf.Types;
 using Volo.Abp.DependencyInjection;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 public class WhitelistContractInitializationProvider : IContractInitializationProvider, ISingletonDependency
 {

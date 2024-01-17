@@ -8,10 +8,10 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "acs12.proto";
 
-option csharp_namespace = "AElf.Contracts.Whitelist";
+option csharp_namespace = "Ewell.Contracts.Whitelist";
 
 service WhitelistContract {
-    option (aelf.csharp_state) = "AElf.Contracts.Whitelist.WhitelistContractState";
+    option (aelf.csharp_state) = "Ewell.Contracts.Whitelist.WhitelistContractState";
     option (aelf.base) = "acs12.proto";
 
     rpc Initialize (google.protobuf.Empty) returns (google.protobuf.Empty) {

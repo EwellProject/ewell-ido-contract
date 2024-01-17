@@ -1,9 +1,10 @@
 using AElf.Boilerplate.TestBase;
 using AElf.Boilerplate.TestBase.SmartContractNameProviders;
+using AElf.Contracts.Whitelist;
 using AElf.Cryptography.ECDSA;
 using AElf.Types;
 
-namespace AElf.Contracts.Whitelist;
+namespace Ewell.Contracts.Whitelist;
 
 public class WhitelistContractTestBase : DAppContractTestBase<WhitelistContractTestModule>
 {
