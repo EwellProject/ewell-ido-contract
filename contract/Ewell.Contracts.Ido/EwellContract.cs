@@ -27,10 +27,12 @@ namespace Ewell.Contracts.Ido
             Assert(input.MaxSubscription > input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
-            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContract.ProportionMax,"Invalid distributeProportion input");
-            var toRaisedAmount = EwellContract.Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContract.Mantissa).Div(input.PreSalePrice).Value);
+            Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
+            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= ProportionMax,"Invalid distributeProportion input");
+            var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(Mantissa).Div(input.PreSalePrice).Value);
             Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");
-            var id = EwellContract.GetHash(input, Context.Sender);
+            var id = GetHash(input, Context.Sender);
+            Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
             ValidTokenBalance(input.ProjectCurrency, virtualAddress, input.CrowdFundingIssueAmount);
@@ -308,8 +310,8 @@ namespace Ewell.Contracts.Ido
             State.LiquidatedDamageDetailsMap[input] =
                 State.LiquidatedDamageDetailsMap[input] ?? new LiquidatedDamageDetails();
             var liquidatedDamageDetails = State.LiquidatedDamageDetailsMap[input];
-            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(EwellContract.LiquidatedDamageProportion).Div(EwellContract.ProportionMax);
-            var liquidatedDamageAmount = EwellContract.Parse(liquidatedDamageAmountStr.Value);
+            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(LiquidatedDamageProportion).Div(ProportionMax);
+            var liquidatedDamageAmount = Parse(liquidatedDamageAmountStr.Value);
             var detail = new LiquidatedDamageDetail()
             {
                 Amount = liquidatedDamageAmount,
@@ -420,8 +422,8 @@ namespace Ewell.Contracts.Ido
             {
                 TransferOut(input, projectInfo.Creator, projectInfo.AcceptedCurrency, liquidatedDamageDetails.TotalAmount);
             }
-            var profitStr =  new BigIntValue(projectInfo.CurrentRaisedAmount).Mul(projectInfo.PreSalePrice).Div(EwellContract.Mantissa).Value;
-            var profit = EwellContract.Parse(profitStr);
+            var profitStr =  new BigIntValue(projectInfo.CurrentRaisedAmount).Mul(projectInfo.PreSalePrice).Div(Mantissa).Value;
+            var profit = Parse(profitStr);
             var toBurnAmount = projectInfo.CrowdFundingIssueAmount.Sub(profit);
             if (projectInfo.IsBurnRestToken)
             {
