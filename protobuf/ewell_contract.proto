@@ -116,6 +116,7 @@ message RegisterInput {
     int32 rest_distribute_proportion = 20;
     int64 period_duration = 21;
     google.protobuf.Timestamp token_release_time = 22;
+    string whitelist_url = 23;
 }
 
 message UpdateAdditionalInfoInput{

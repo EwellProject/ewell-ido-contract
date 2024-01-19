@@ -27,7 +27,8 @@ public partial class WhitelistContract
             IsCloneable = input.IsCloneable,
             Remark = input.Remark,
             Manager = managerList,
-            StrategyType = input.StrategyType
+            StrategyType = input.StrategyType,
+            Url = input.Url
         };
 
         var alreadyExistsAddressList = new List<Address>();
@@ -119,7 +120,8 @@ public partial class WhitelistContract
             IsAvailable = whitelistInfo.IsAvailable,
             Remark = whitelistInfo.Remark,
             Manager = whitelistInfo.Manager,
-            StrategyType = whitelistInfo.StrategyType
+            StrategyType = whitelistInfo.StrategyType,
+            Url = whitelistInfo.Url
         });
 
         State.WhitelistInfoMap[whitelistHash] = whitelistInfo;
@@ -443,6 +445,21 @@ public partial class WhitelistContract
         {
             WhitelistId = whitelistInfo.WhitelistId,
             IsAvailable = whitelistInfo.IsAvailable,
+        });
+        return new Empty();
+    }
+
+    public override Empty ChangeWhitelistUrl(ChangeWhitelistUrlInput input)
+    {
+        AssertWhitelistInfo(input.WhitelistId);
+        AssertWhitelistIsAvailable(input.WhitelistId);
+        var whitelistInfo = AssertWhitelistManager(input.WhitelistId);
+        whitelistInfo.Url = input.Url;
+        State.WhitelistInfoMap[whitelistInfo.WhitelistId] = whitelistInfo;
+        Context.Fire(new UrlChanged
+        {
+            WhitelistId = whitelistInfo.WhitelistId,
+            Url = whitelistInfo.Url
         });
         return new Empty();
     }

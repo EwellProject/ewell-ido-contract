@@ -20,6 +20,7 @@ namespace Ewell.Contracts.Ido
         private readonly int _chainId = ChainHelper.ConvertBase58ToChainId("AELF");
 
         private const string TestSymbol = "TEST-1";
+        private const string WhitelistUrl = "WhitelistUrl";
 
         [Fact]
         public async Task InitializeTest()
@@ -77,7 +78,8 @@ namespace Ewell.Contracts.Ido
                 FirstDistributeProportion = 100_000000,
                 RestDistributeProportion = 0,
                 PeriodDuration = 0,
-                TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30)
+                TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30),
+                WhitelistUrl = WhitelistUrl
             };
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
 
@@ -85,6 +87,10 @@ namespace Ewell.Contracts.Ido
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
                     .NonIndexed)
                 .ProjectId;
+            var whitelistUrlLog = WhitelistCreated.Parser
+                .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))
+                    .NonIndexed)
+                .Url;
             var whitelistIdLog = WhitelistCreated.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))
                     .NonIndexed)
@@ -92,6 +98,7 @@ namespace Ewell.Contracts.Ido
 
             var whitelistId = await AdminStub.GetWhitelistId.CallAsync(projectId);
             whitelistId.ShouldBe(whitelistIdLog);
+            WhitelistUrl.ShouldBe(whitelistUrlLog);
             projectId0 = projectId;
         }
 

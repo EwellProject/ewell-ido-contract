@@ -50,6 +50,10 @@ service WhitelistContract {
     rpc EnableWhitelist (aelf.Hash) returns (google.protobuf.Empty){
     }
 
+    //Update whitelistUrl.
+    rpc ChangeWhitelistUrl(ChangeWhitelistUrlInput) returns (google.protobuf.Empty){
+    }
+
     //Update state: Whether the whitelist is allowed to be cloned.
     rpc ChangeWhitelistCloneable(ChangeWhitelistCloneableInput) returns (google.protobuf.Empty){
     }
@@ -231,6 +235,7 @@ message WhitelistInfo {
     aelf.Address creator = 8;
     AddressList manager = 9;
     StrategyType strategy_type = 10;
+    string url = 11;
 }
 
 //Pricing strategy
@@ -319,6 +324,7 @@ message CreateWhitelistInput {
     AddressList manager_list = 5;
     aelf.Hash project_id = 6;
     StrategyType strategy_type = 7;
+    string url = 8;
 }
 
 message AddAddressInfoListToWhitelistInput {
@@ -334,6 +340,11 @@ message RemoveAddressInfoListFromWhitelistInput{
 message RemoveInfoFromWhitelistInput{
     aelf.Hash whitelist_id = 1;
     AddressList address_list = 2;
+}
+
+message ChangeWhitelistUrlInput{
+    aelf.Hash whitelist_id = 1;
+    string url = 2;
 }
 
 message ChangeWhitelistCloneableInput{
@@ -486,7 +497,7 @@ message WhitelistCreated {
     AddressList manager = 8;
     aelf.Hash project_id = 9;
     StrategyType strategy_type = 10;
-
+    string url = 11;
 }
 
 message WhitelistSubscribed {
@@ -539,6 +550,12 @@ message ConsumedListAdded {
     aelf.Hash subscribe_id = 1;
     aelf.Hash whitelist_id = 2;
     ExtraInfoIdList extra_info_id_list = 3;
+}
+
+message UrlChanged{
+    option (aelf.is_event) = true;
+    aelf.Hash whitelist_id = 1;
+    string url = 2;
 }
 
 message IsCloneableChanged{

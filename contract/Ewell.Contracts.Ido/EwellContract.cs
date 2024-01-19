@@ -85,7 +85,9 @@ namespace Ewell.Contracts.Ido
                     Creator = Context.Self,
                     ProjectId = id,
                     ExtraInfoList = new ExtraInfoList(),
-                    ManagerList = new AddressList(){Value = { Context.Self, Context.Sender}}
+                    ManagerList = new AddressList(){Value = { Context.Self, Context.Sender}},
+                    Url = input.WhitelistUrl ?? "",
+                    StrategyType = StrategyType.Basic
                 });
                 //write id to state and set enabled state
                 Context.SendInline(Context.Self, nameof(SetWhitelistId), new SetWhitelistIdInput()

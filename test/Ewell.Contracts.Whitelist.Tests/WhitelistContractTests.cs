@@ -42,6 +42,8 @@ namespace Ewell.Contracts.Whitelist
             Amount = 2200_000000
         }.ToByteString();
 
+        private const string WhitelistUrl = "WhitelistUrl";
+        private const string WhitelistUrlNew = "WhitelistUrlNew";
 
         private Hash CalculateId(Hash whitelistId, Hash projectId, string tagName)
         {
@@ -94,7 +96,8 @@ namespace Ewell.Contracts.Whitelist
                 {
                     Value = {User4Address}
                 },
-                StrategyType = StrategyType.Price
+                StrategyType = StrategyType.Price,
+                Url = WhitelistUrl
             })).Output;
             var whitelistId2 = (await WhitelistContractStub.CreateWhitelist.SendAsync(new CreateWhitelistInput()
             {
@@ -129,7 +132,8 @@ namespace Ewell.Contracts.Whitelist
                 {
                     Value = {User5Address, User5Address}
                 },
-                StrategyType = StrategyType.Price
+                StrategyType = StrategyType.Price,
+                Url = WhitelistUrl
             })).Output;
             {
                 var whitelistIdList = await WhitelistContractStub.GetWhitelistIdList.CallAsync(
@@ -174,6 +178,7 @@ namespace Ewell.Contracts.Whitelist
                 whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
                 whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].ShouldBe(User4Address);
                 whitelist.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO3"));
+                whitelist.Url.ShouldBe(WhitelistUrl);
             }
             {
                 var tagInfo =
@@ -216,6 +221,7 @@ namespace Ewell.Contracts.Whitelist
                 var whitelist2 = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId2);
                 whitelist2.ExtraInfoIdList.Value[1].AddressList.Value[0].ShouldBe(User2Address);
                 whitelist2.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(whitelistId2, _projectId2, "INFO1"));
+                whitelist2.Url.ShouldBe(WhitelistUrl);
             }
             {
                 var whitelistDetail = await WhitelistContractStub.GetWhitelistDetail.CallAsync(whitelistId);
@@ -271,7 +277,8 @@ namespace Ewell.Contracts.Whitelist
                 {
                     Value = {User4Address}
                 },
-                StrategyType = StrategyType.Basic
+                StrategyType = StrategyType.Basic,
+                Url = WhitelistUrl
             })).Output;
             {
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
@@ -280,6 +287,7 @@ namespace Ewell.Contracts.Whitelist
                 whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
                 whitelist.ExtraInfoIdList.Value[0].AddressList.Value[1].ShouldBe(User3Address);
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBeNull();
+                whitelist.Url.ShouldBe(WhitelistUrl);
             }
             return whitelistId;
         }
@@ -1041,6 +1049,19 @@ namespace Ewell.Contracts.Whitelist
             });
             var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
             whitelist.IsCloneable.ShouldBe(false);
+        }
+        
+        [Fact]
+        public async Task ChangeWhitelistUrlTest()
+        {
+            var whitelistId = await CreateWhitelistTest();
+            await WhitelistContractStub.ChangeWhitelistUrl.SendAsync(new ChangeWhitelistUrlInput()
+            {
+                WhitelistId = whitelistId,
+                Url = WhitelistUrlNew
+            });
+            var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
+            whitelist.Url.ShouldBe(WhitelistUrlNew);
         }
 
         [Fact]
