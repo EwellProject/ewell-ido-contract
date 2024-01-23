@@ -72,7 +72,11 @@ namespace Ewell.Contracts.Whitelist
                     {
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User1Address, User2Address}},
+                            AddressList = new AddressList() {Value =
+                            {
+                                new AddressTime(){Address = User1Address},
+                                new AddressTime(){Address = User2Address}
+                            }},
                             Info = new TagInfo()
                             {
                                 TagName = "INFO1",
@@ -81,7 +85,11 @@ namespace Ewell.Contracts.Whitelist
                         },
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User3Address, User4Address}},
+                            AddressList = new AddressList() {Value =
+                            {
+                                new AddressTime(){Address = User3Address},
+                                new AddressTime(){Address = User4Address}
+                            }},
                             Info = new TagInfo()
                             {
                                 TagName = "INFO3",
@@ -94,7 +102,7 @@ namespace Ewell.Contracts.Whitelist
                 Remark = "new whitelist test",
                 ManagerList = new AddressList()
                 {
-                    Value = {User4Address}
+                    Value = {new AddressTime(){Address = User4Address}}
                 },
                 StrategyType = StrategyType.Price,
                 Url = WhitelistUrl
@@ -108,7 +116,7 @@ namespace Ewell.Contracts.Whitelist
                     {
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}},
                             Info = new TagInfo()
                             {
                                 TagName = "INFO5",
@@ -117,7 +125,7 @@ namespace Ewell.Contracts.Whitelist
                         },
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User2Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                             Info = new TagInfo()
                             {
                                 TagName = "INFO1",
@@ -128,10 +136,11 @@ namespace Ewell.Contracts.Whitelist
                 },
                 IsCloneable = true,
                 Remark = "second whitelist test",
-                ManagerList = new AddressList()
+                ManagerList = new AddressList() {Value =
                 {
-                    Value = {User5Address, User5Address}
-                },
+                    new AddressTime(){Address = User5Address},
+                    new AddressTime(){Address = User5Address}
+                }},
                 StrategyType = StrategyType.Price,
                 Url = WhitelistUrl
             })).Output;
@@ -175,9 +184,11 @@ namespace Ewell.Contracts.Whitelist
             {
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(2);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
-                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].ShouldBe(User4Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].Address.ShouldBe(User4Address);
                 whitelist.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO3"));
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].CreateTime.ShouldNotBeNull();
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[1].CreateTime.ShouldNotBeNull();
                 whitelist.Url.ShouldBe(WhitelistUrl);
             }
             {
@@ -194,7 +205,7 @@ namespace Ewell.Contracts.Whitelist
                     TagInfoId = CalculateId(whitelistId, _projectId, "INFO1")
                 });
                 extraInfo.AddressList.Value.Count.ShouldBe(2);
-                extraInfo.AddressList.Value[0].ShouldBe(User1Address);
+                extraInfo.AddressList.Value[0].Address.ShouldBe(User1Address);
             }
             {
                 var extraInfoIdList = await WhitelistContractStub.GetExtraInfoIdList.CallAsync(
@@ -219,14 +230,14 @@ namespace Ewell.Contracts.Whitelist
             }
             {
                 var whitelist2 = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId2);
-                whitelist2.ExtraInfoIdList.Value[1].AddressList.Value[0].ShouldBe(User2Address);
+                whitelist2.ExtraInfoIdList.Value[1].AddressList.Value[0].Address.ShouldBe(User2Address);
                 whitelist2.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(whitelistId2, _projectId2, "INFO1"));
                 whitelist2.Url.ShouldBe(WhitelistUrl);
             }
             {
                 var whitelistDetail = await WhitelistContractStub.GetWhitelistDetail.CallAsync(whitelistId);
                 whitelistDetail.Value[1].AddressList.Value.Count.ShouldBe(2);
-                whitelistDetail.Value[1].AddressList.Value[0].ShouldBe(User3Address);
+                whitelistDetail.Value[1].AddressList.Value[0].Address.ShouldBe(User3Address);
                 whitelistDetail.Value[1].Info.TagName.ShouldBe("INFO3");
                 whitelistDetail.Value[1].Info.Info.ShouldBe(Info3);
             }
@@ -244,7 +255,7 @@ namespace Ewell.Contracts.Whitelist
             {
                 var manager = await WhitelistContractStub.GetManagerList.CallAsync(whitelistId2);
                 manager.Value.Count.ShouldBe(2);
-                manager.Value[0].ShouldBe(User5Address);
+                manager.Value[0].Address.ShouldBe(User5Address);
             }
 
             return whitelistId;
@@ -263,11 +274,11 @@ namespace Ewell.Contracts.Whitelist
                     {
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User1Address}}
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}}
                         },
                         new ExtraInfo
                         {
-                            AddressList = new AddressList() {Value = {User3Address}}
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User3Address}}}
                         }
                     }
                 },
@@ -275,7 +286,7 @@ namespace Ewell.Contracts.Whitelist
                 Remark = "new whitelist test",
                 ManagerList = new AddressList()
                 {
-                    Value = {User4Address}
+                    Value = {new AddressTime{Address = User4Address}}
                 },
                 StrategyType = StrategyType.Basic,
                 Url = WhitelistUrl
@@ -284,8 +295,9 @@ namespace Ewell.Contracts.Whitelist
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.WhitelistId.ShouldBe(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(1);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[1].ShouldBe(User3Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[1].Address.ShouldBe(User3Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[1].CreateTime.ShouldNotBeNull();
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBeNull();
                 whitelist.Url.ShouldBe(WhitelistUrl);
             }
@@ -308,7 +320,12 @@ namespace Ewell.Contracts.Whitelist
                             new ExtraInfo
                             {
                                 AddressList = new AddressList()
-                                    {Value = {User1Address, User1Address, User2Address}},
+                                    {Value =
+                                    {
+                                        new AddressTime{Address = User1Address},
+                                        new AddressTime{Address = User1Address},
+                                        new AddressTime{Address = User2Address}
+                                    }},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO1",
@@ -317,7 +334,7 @@ namespace Ewell.Contracts.Whitelist
                             },
                             new ExtraInfo
                             {
-                                AddressList = new AddressList() {Value = {User2Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO3",
@@ -330,7 +347,7 @@ namespace Ewell.Contracts.Whitelist
                     Remark = "new whitelist test",
                     ManagerList = new AddressList()
                     {
-                        Value = {User4Address}
+                        Value = {new AddressTime{Address = User4Address}}
                     },
                     StrategyType = StrategyType.Price
                 });
@@ -352,7 +369,7 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfo
                             {
-                                AddressList = new AddressList() {Value = {User1Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO1",
@@ -361,7 +378,7 @@ namespace Ewell.Contracts.Whitelist
                             },
                             new ExtraInfo
                             {
-                                AddressList = new AddressList() {Value = {User2Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                                 Info = new TagInfo()
                                 {
                                     TagName = "INFO1",
@@ -374,7 +391,7 @@ namespace Ewell.Contracts.Whitelist
                     Remark = "new whitelist test",
                     ManagerList = new AddressList()
                     {
-                        Value = {User4Address}
+                        Value = {new AddressTime{Address = User4Address}}
                     },
                     StrategyType = StrategyType.Price
                 });
@@ -440,16 +457,18 @@ namespace Ewell.Contracts.Whitelist
                 },
                 AddressList = new AddressList()
                 {
-                    Value = {User5Address, User6Address}
+                    Value = {new AddressTime{Address = User5Address},new AddressTime{Address = User6Address}}
                 }
             })).Output;
             {
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(3);
                 whitelist.ExtraInfoIdList.Value[1].AddressList.Value.Count.ShouldBe(2);
-                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[0].ShouldBe(User3Address);
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[0].Address.ShouldBe(User3Address);
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[0].CreateTime.ShouldNotBeNull();
                 whitelist.ExtraInfoIdList.Value[2].Id.ShouldBe(tagInfoId);
-                whitelist.ExtraInfoIdList.Value[2].AddressList.Value[1].ShouldBe(User6Address);
+                whitelist.ExtraInfoIdList.Value[2].AddressList.Value[1].Address.ShouldBe(User6Address);
+                whitelist.ExtraInfoIdList.Value[2].AddressList.Value[0].CreateTime.ShouldNotBeNull();
             }
             {
                 var tag = await WhitelistContractStub.GetTagInfoByHash.CallAsync(tagInfoId);
@@ -463,7 +482,7 @@ namespace Ewell.Contracts.Whitelist
                     TagInfoId = tagInfoId
                 });
                 extraInfo.AddressList.Value.Count.ShouldBe(2);
-                extraInfo.AddressList.Value[1].ShouldBe(User6Address);
+                extraInfo.AddressList.Value[1].Address.ShouldBe(User6Address);
             }
             {
                 var tagInfo = await WhitelistContractStub.GetExtraInfoByAddress.CallAsync(
@@ -493,7 +512,7 @@ namespace Ewell.Contracts.Whitelist
                     ProjectId = _projectId,
                     AddressList = new AddressList()
                     {
-                        Value = {User1Address, User4Address}
+                        Value = {new AddressTime{Address = User1Address}, new AddressTime{Address = User4Address}}
                     }
                 });
             executionResult.TransactionResult.Error.ShouldContain("The tag Info INFO1 already exists.");
@@ -526,7 +545,7 @@ namespace Ewell.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -578,7 +597,7 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User1Address, User2Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}, new AddressTime{Address = User2Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -601,12 +620,12 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User5Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User5Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User6Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User6Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -616,10 +635,12 @@ namespace Ewell.Contracts.Whitelist
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(2);
                 whitelist.ExtraInfoIdList.Value[0].AddressList.Value.Count.ShouldBe(4);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[2].ShouldBe(User5Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[2].Address.ShouldBe(User5Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[2].CreateTime.ShouldNotBeNull();
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO1"));
-                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].ShouldBe(User4Address);
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].Address.ShouldBe(User4Address);
                 whitelist.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO3"));
+                whitelist.ExtraInfoIdList.Value[1].AddressList.Value[1].CreateTime.ShouldNotBeNull();
             }
             {
                 var extraInfo =
@@ -639,8 +660,10 @@ namespace Ewell.Contracts.Whitelist
                     TagInfoId = CalculateId(whitelistId, _projectId, "INFO1")
                 });
                 extra.AddressList.Value.Count.ShouldBe(4);
-                extra.AddressList.Value[0].ShouldBe(User1Address);
-                extra.AddressList.Value[3].ShouldBe(User6Address);
+                extra.AddressList.Value[0].Address.ShouldBe(User1Address);
+                extra.AddressList.Value[0].CreateTime.ShouldNotBeNull();
+                extra.AddressList.Value[3].Address.ShouldBe(User6Address);
+                extra.AddressList.Value[3].CreateTime.ShouldNotBeNull();
             }
             {
                 var tagId = await WhitelistContractStub.GetExtraInfoByAddress.CallAsync(new GetExtraInfoByAddressInput()
@@ -658,7 +681,7 @@ namespace Ewell.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}},
                             Id = CalculateId(whitelistId, _projectId, "INFO1")
                         }
                     });
@@ -668,8 +691,10 @@ namespace Ewell.Contracts.Whitelist
                 var log = WhitelistAddressInfoAdded.Parser.ParseFrom(executionResult.TransactionResult.Logs
                     .First(l => l.Name == nameof(WhitelistAddressInfoAdded)).NonIndexed).ExtraInfoIdList;
                 log.Value.Count.ShouldBe(1);
-                log.Value[0].AddressList.Value[0].ShouldBe(User5Address);
-                log.Value[0].AddressList.Value[1].ShouldBe(User6Address);
+                log.Value[0].AddressList.Value[0].Address.ShouldBe(User5Address);
+                log.Value[0].AddressList.Value[1].Address.ShouldBe(User6Address);
+                log.Value[0].AddressList.Value[0].CreateTime.ShouldNotBeNull();
+                log.Value[0].AddressList.Value[1].CreateTime.ShouldNotBeNull();
                 log.Value[0].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO1"));
             }
             return whitelistId;
@@ -689,11 +714,11 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User2Address}}
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}}
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User4Address, User5Address}}
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User4Address}, new AddressTime{Address = User5Address}}}
                             }
                         }
                     }
@@ -702,12 +727,14 @@ namespace Ewell.Contracts.Whitelist
                 var whitelistInfo = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelistInfo.ExtraInfoIdList.Value.Count.ShouldBe(1);
                 whitelistInfo.ExtraInfoIdList.Value[0].AddressList.Value.Count.ShouldBe(5);
-                whitelistInfo.ExtraInfoIdList.Value[0].AddressList.Value[4].ShouldBe(User5Address);
+                whitelistInfo.ExtraInfoIdList.Value[0].AddressList.Value[4].Address.ShouldBe(User5Address);
+                whitelistInfo.ExtraInfoIdList.Value[0].AddressList.Value[4].CreateTime.ShouldNotBeNull();
                 whitelistInfo.ExtraInfoIdList.Value[0].Id.ShouldBeNull();
             }
             {
                 var whitelistDetail = await WhitelistContractStub.GetWhitelistDetail.CallAsync(whitelistId);
-                whitelistDetail.Value[0].AddressList.Value[4].ShouldBe(User5Address);
+                whitelistDetail.Value[0].AddressList.Value[4].Address.ShouldBe(User5Address);
+                whitelistDetail.Value[0].AddressList.Value[4].CreateTime.ShouldNotBeNull();
                 whitelistDetail.Value[0].Info.ShouldBeNull();
             }
             {
@@ -723,9 +750,12 @@ namespace Ewell.Contracts.Whitelist
                 var log = WhitelistAddressInfoAdded.Parser.ParseFrom(executionResult.TransactionResult.Logs
                     .First(l => l.Name == nameof(WhitelistAddressInfoAdded)).NonIndexed).ExtraInfoIdList;
                 log.Value.Count.ShouldBe(1);
-                log.Value[0].AddressList.Value[0].ShouldBe(User2Address);
-                log.Value[0].AddressList.Value[1].ShouldBe(User4Address);
-                log.Value[0].AddressList.Value[2].ShouldBe(User5Address);
+                log.Value[0].AddressList.Value[0].Address.ShouldBe(User2Address);
+                log.Value[0].AddressList.Value[1].Address.ShouldBe(User4Address);
+                log.Value[0].AddressList.Value[2].Address.ShouldBe(User5Address);
+                log.Value[0].AddressList.Value[0].CreateTime.ShouldNotBeNull();
+                log.Value[0].AddressList.Value[1].CreateTime.ShouldNotBeNull();
+                log.Value[0].AddressList.Value[2].CreateTime.ShouldNotBeNull();
                 log.Value[0].Id.ShouldBeNull();
             }
             return whitelistId;
@@ -744,7 +774,7 @@ namespace Ewell.Contracts.Whitelist
                         Value = { 
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList(){Value = { User1Address,User1Address }}
+                                AddressList = new AddressList(){Value = { new AddressTime{Address = User1Address}, new AddressTime{Address = User1Address} }}
                             }
                         }
                     }
@@ -765,12 +795,12 @@ namespace Ewell.Contracts.Whitelist
                          Value = { 
                              new ExtraInfoId()
                              {
-                                 AddressList  = new AddressList(){Value = { User1Address }},
+                                 AddressList  = new AddressList(){Value = { new AddressTime{Address = User1Address} }},
                                  Id = CalculateId(whitelistId,_projectId,"INFO3")
                             },
                             new ExtraInfoId() 
                             {
-                                AddressList  = new AddressList(){Value = { User2Address }},
+                                AddressList  = new AddressList(){Value = { new AddressTime{Address = User2Address} }},
                                 Id = CalculateId(whitelistId,_projectId,"INFO1")
                             }
                         }
@@ -793,12 +823,12 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User5Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User5Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO6")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User6Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User6Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -821,12 +851,12 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User2Address, User1Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}, new AddressTime{Address = User1Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User3Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User3Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO3")
                             }
                         }
@@ -835,15 +865,16 @@ namespace Ewell.Contracts.Whitelist
             {
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(2);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User5Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User5Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].CreateTime.ShouldNotBeNull();
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO1"));
             }
             {
                 var log = WhitelistAddressInfoRemoved.Parser.ParseFrom(executionResult.TransactionResult.Logs
                     .First(l => l.Name == nameof(WhitelistAddressInfoRemoved)).NonIndexed).ExtraInfoIdList;
                 log.Value.Count.ShouldBe(2);
-                log.Value[0].AddressList.Value[0].ShouldBe(User2Address);
-                log.Value[0].AddressList.Value[1].ShouldBe(User1Address);
+                log.Value[0].AddressList.Value[0].Address.ShouldBe(User2Address);
+                log.Value[0].AddressList.Value[1].Address.ShouldBe(User1Address);
                 log.Value[0].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO1"));
             }
         }
@@ -862,11 +893,11 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User1Address}}
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}}
                             },
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User3Address}}
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User3Address}}}
                             }
                         }
                     }
@@ -874,7 +905,8 @@ namespace Ewell.Contracts.Whitelist
             {
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(1);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User2Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User2Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value[0].CreateTime.ShouldNotBeNull();
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBeNull();
             }
             {
@@ -890,8 +922,10 @@ namespace Ewell.Contracts.Whitelist
                 var log = WhitelistAddressInfoRemoved.Parser.ParseFrom(executionResult.TransactionResult.Logs
                     .First(l => l.Name == nameof(WhitelistAddressInfoRemoved)).NonIndexed).ExtraInfoIdList;
                 log.Value.Count.ShouldBe(1);
-                log.Value[0].AddressList.Value[0].ShouldBe(User1Address);
-                log.Value[0].AddressList.Value[1].ShouldBe(User3Address);
+                log.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
+                log.Value[0].AddressList.Value[1].Address.ShouldBe(User3Address);
+                log.Value[0].AddressList.Value[0].CreateTime.ShouldNotBeNull();
+                log.Value[0].AddressList.Value[1].CreateTime.ShouldNotBeNull();
                 log.Value[0].Id.ShouldBeNull();
             }
         }
@@ -910,7 +944,7 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {DefaultAddress}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = DefaultAddress}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -933,7 +967,7 @@ namespace Ewell.Contracts.Whitelist
                         {
                             new ExtraInfoId()
                             {
-                                AddressList = new AddressList() {Value = {User1Address, User1Address}},
+                                AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}, new AddressTime{Address = User1Address}}},
                                 Id = CalculateId(whitelistId, _projectId, "INFO1")
                             }
                         }
@@ -951,7 +985,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = whitelistId,
                 AddressList = new AddressList
                 {
-                    Value = {User1Address, User3Address, User5Address}
+                    Value = {new AddressTime{Address = User1Address}, new AddressTime{Address = User3Address}, new AddressTime{Address = User5Address}}
                 }
             });
             {
@@ -988,7 +1022,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = whitelistId,
                 AddressList = new AddressList
                 {
-                    Value = {User1Address, User3Address, User5Address}
+                    Value = {new AddressTime{Address = User1Address}, new AddressTime{Address = User3Address}, new AddressTime{Address = User5Address}}
                 }
             });
             {
@@ -1074,7 +1108,7 @@ namespace Ewell.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new AddressList() {Value = {User2Address, User1Address}},
+                        AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}, new AddressTime{Address = User1Address}}},
                         Id = CalculateId(whitelistId, _projectId, "INFO3")
                     }
                 });
@@ -1082,7 +1116,7 @@ namespace Ewell.Contracts.Whitelist
                 var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelist.ExtraInfoIdList.Value.Count.ShouldBe(2);
                 whitelist.ExtraInfoIdList.Value[0].AddressList.Value.Count.ShouldBe(2);
-                whitelist.ExtraInfoIdList.Value[0].AddressList.Value.ShouldNotContain(User2Address);
+                whitelist.ExtraInfoIdList.Value[0].AddressList.Value.Select(x => x.Address).ShouldNotContain(User2Address);
                 whitelist.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(whitelistId, _projectId, "INFO1"));
             }
             {
@@ -1093,7 +1127,7 @@ namespace Ewell.Contracts.Whitelist
                 });
                 extraInfo.AddressList.Value.Count.ShouldBe(2);
                 //extraInfo.AddressList.Value[0].ShouldBe(User1Address);
-                extraInfo.AddressList.Value[0].ShouldBe(User5Address);
+                extraInfo.AddressList.Value[0].Address.ShouldBe(User5Address);
             }
             {
                 var extraInfo = await WhitelistContractStub.GetExtraInfoByTag.CallAsync(new GetExtraInfoByTagInput()
@@ -1102,8 +1136,8 @@ namespace Ewell.Contracts.Whitelist
                     TagInfoId = CalculateId(whitelistId, _projectId, "INFO3")
                 });
                 extraInfo.AddressList.Value.Count.ShouldBe(4);
-                extraInfo.AddressList.Value.ShouldContain(User1Address);
-                extraInfo.AddressList.Value.ShouldContain(User2Address);
+                extraInfo.AddressList.Value.Select(x => x.Address).ShouldContain(User1Address);
+                extraInfo.AddressList.Value.Select(x => x.Address).ShouldContain(User2Address);
             }
             {
                 var tagInfo = await WhitelistContractStub.GetExtraInfoByAddress.CallAsync(
@@ -1122,7 +1156,7 @@ namespace Ewell.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new AddressList() {Value = {User2Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                             Id = CalculateId(whitelistId, _projectId, "INFO1")
                         }
                     });
@@ -1135,7 +1169,7 @@ namespace Ewell.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new AddressList() {Value = {User2Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -1148,7 +1182,7 @@ namespace Ewell.Contracts.Whitelist
                         WhitelistId = whitelistId,
                         ExtraInfoId = new ExtraInfoId()
                         {
-                            AddressList = new AddressList() {Value = {User1Address}},
+                            AddressList = new AddressList() {Value = {new AddressTime{Address = User1Address}}},
                             Id = CalculateId(whitelistId, _projectId, "INFO3")
                         }
                     });
@@ -1166,7 +1200,7 @@ namespace Ewell.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new AddressList() {Value = {DefaultAddress}},
+                        AddressList = new AddressList() {Value = {new AddressTime{Address = DefaultAddress}}},
                         Id = CalculateId(whitelistId, _projectId, "INFO1")
                     }
                 });
@@ -1183,7 +1217,7 @@ namespace Ewell.Contracts.Whitelist
                     WhitelistId = whitelistId,
                     ExtraInfoList = new ExtraInfoId()
                     {
-                        AddressList = new AddressList() {Value = {User2Address}},
+                        AddressList = new AddressList() {Value = {new AddressTime{Address = User2Address}}},
                         Id = CalculateId(whitelistId, _projectId, "INFO5")
                     }
                 });
@@ -1202,12 +1236,12 @@ namespace Ewell.Contracts.Whitelist
                     Manager = User1Address
                 });
             var whitelist = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
-            whitelist.Manager.Value.ShouldContain(User1Address);
-            whitelist.Manager.Value.ShouldNotContain(DefaultAddress);
+            whitelist.Manager.Value.Select(x => x.Address).ShouldContain(User1Address);
+            whitelist.Manager.Value.Select(x => x.Address).ShouldNotContain(DefaultAddress);
             {
                 var managerList = await WhitelistContractStub.GetManagerList.CallAsync(whitelistId);
-                managerList.Value.ShouldContain(User1Address);
-                managerList.Value.ShouldNotContain(DefaultAddress);
+                managerList.Value.Select(x => x.Address).ShouldContain(User1Address);
+                managerList.Value.Select(x => x.Address).ShouldNotContain(DefaultAddress);
             }
         }
 
@@ -1220,14 +1254,14 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = whitelistId,
                 ManagerList = new AddressList()
                 {
-                    Value = {User5Address}
+                    Value = {new AddressTime{Address = User5Address}}
                 }
             });
             {
                 var manager = await WhitelistContractStub.GetManagerList.CallAsync(whitelistId);
                 manager.Value.Count.ShouldBe(3);
-                manager.Value[0].ShouldBe(User4Address);
-                manager.Value[2].ShouldBe(User5Address);
+                manager.Value[0].Address.ShouldBe(User4Address);
+                manager.Value[2].Address.ShouldBe(User5Address);
             }
             {
                 var whitelistIdList = await WhitelistContractStub.GetWhitelistByManager.CallAsync(User5Address);
@@ -1237,8 +1271,8 @@ namespace Ewell.Contracts.Whitelist
             {
                 var whitelistInfo = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelistInfo.Manager.Value.Count.ShouldBe(3);
-                whitelistInfo.Manager.Value[0].ShouldBe(User4Address);
-                whitelistInfo.Manager.Value[2].ShouldBe(User5Address);
+                whitelistInfo.Manager.Value[0].Address.ShouldBe(User4Address);
+                whitelistInfo.Manager.Value[2].Address.ShouldBe(User5Address);
             }
             return whitelistId;
         }
@@ -1252,7 +1286,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = whitelistId,
                 ManagerList = new AddressList()
                 {
-                    Value = {User4Address}
+                    Value = {new AddressTime{Address = User4Address}}
                 }
             });
             executionResult.TransactionResult.Error.ShouldContain("Managers already exists.");
@@ -1267,13 +1301,13 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = whitelistId,
                 ManagerList = new AddressList()
                 {
-                    Value = {User4Address}
+                    Value = {new AddressTime{Address = User4Address}}
                 }
             });
             {
                 var manager = await WhitelistContractStub.GetManagerList.CallAsync(whitelistId);
                 manager.Value.Count.ShouldBe(2);
-                manager.Value[0].ShouldBe(DefaultAddress);
+                manager.Value[0].Address.ShouldBe(DefaultAddress);
             }
             {
                 var exception = await WhitelistContractStub.GetWhitelistByManager.CallWithExceptionAsync(User4Address);
@@ -1282,7 +1316,7 @@ namespace Ewell.Contracts.Whitelist
             {
                 var whitelistInfo = await WhitelistContractStub.GetWhitelist.CallAsync(whitelistId);
                 whitelistInfo.Manager.Value.Count.ShouldBe(2);
-                whitelistInfo.Manager.Value[0].ShouldBe(DefaultAddress);
+                whitelistInfo.Manager.Value[0].Address.ShouldBe(DefaultAddress);
             }
         }
 

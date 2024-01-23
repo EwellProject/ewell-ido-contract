@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AElf.Contracts.MultiToken;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
@@ -87,7 +88,10 @@ namespace Ewell.Contracts.Ido
                     Creator = Context.Self,
                     ProjectId = id,
                     ExtraInfoList = new ExtraInfoList(),
-                    ManagerList = new AddressList(){Value = { Context.Self, Context.Sender}},
+                    ManagerList = new AddressList {Value = { 
+                        new AddressTime {Address = Context.Sender},
+                        new AddressTime {Address = Context.Self}
+                    }},
                     Url = input.WhitelistUrl ?? "",
                     StrategyType = StrategyType.Basic
                 });
@@ -143,7 +147,7 @@ namespace Ewell.Contracts.Ido
             var list = new AddressList();
             foreach (var user in input.Users)
             {
-                list.Value.Add(user);
+                list.Value.Add(new AddressTime(){Address = user});
             }
           
             State.WhitelistContract.AddAddressInfoListToWhitelist.Send(new AddAddressInfoListToWhitelistInput()
@@ -170,7 +174,7 @@ namespace Ewell.Contracts.Ido
             var list = new AddressList();
             foreach (var user in input.Users)
             {
-                list.Value.Add(user);
+                list.Value.Add(new AddressTime {Address = user});
             }
             State.WhitelistContract.RemoveAddressInfoListFromWhitelist.Send(new RemoveAddressInfoListFromWhitelistInput()
             {

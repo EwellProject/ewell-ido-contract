@@ -7,6 +7,7 @@ import "aelf/options.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 import "acs12.proto";
+import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "Ewell.Contracts.Whitelist";
 
@@ -303,7 +304,12 @@ message ConsumedList {
 }
 
 message AddressList {
-    repeated aelf.Address value = 1;
+    repeated AddressTime value = 1;
+}
+
+message AddressTime {
+    aelf.Address address = 1;
+    google.protobuf.Timestamp create_time = 2;
 }
 
 message HashList{

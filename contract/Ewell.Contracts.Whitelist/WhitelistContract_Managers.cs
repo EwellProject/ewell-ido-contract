@@ -34,6 +34,13 @@ public partial class WhitelistContract
         var alreadyExistsAddressList = new List<Address>();
         //Remove duplicate addresses.
         var extraInfoList = input.ExtraInfoList.Value;
+        foreach (var extraInfo in extraInfoList)
+        {
+            foreach (var addressTime in extraInfo.AddressList.Value)
+            {
+                addressTime.CreateTime = Context.CurrentBlockTime;
+            }
+        }
         if (input.StrategyType == StrategyType.Basic)
         {
             var addressList = new AddressList();
@@ -86,13 +93,13 @@ public partial class WhitelistContract
                 //Map address and tagInfoId.
                 foreach (var address in e.AddressList.Value)
                 {
-                    State.AddressTagInfoIdMap[whitelistHash][address] = id;
-                    if (alreadyExistsAddressList.Contains(address))
+                    State.AddressTagInfoIdMap[whitelistHash][address.Address] = id;
+                    if (alreadyExistsAddressList.Contains(address.Address))
                     {
                         throw new AssertionException($"Duplicate address: ${address}.");
                     }
 
-                    alreadyExistsAddressList.Add(address);
+                    alreadyExistsAddressList.Add(address.Address);
                 }
 
                 extraInfoIdList.Add(new ExtraInfoId
@@ -171,6 +178,10 @@ public partial class WhitelistContract
 
         //Add tagInfo with address list.
         if (input.AddressList == null) return tagInfoId;
+        foreach (var addressTime in input.AddressList.Value)
+        {
+            addressTime.CreateTime = Context.CurrentBlockTime;
+        }
         var extraInfoIdList = new ExtraInfoIdList()
         {
             Value =
@@ -243,6 +254,7 @@ public partial class WhitelistContract
                     throw new AssertionException($"Duplicate address.{address}");
                 }
 
+                address.CreateTime = Context.CurrentBlockTime;
                 toAddAddressList.Value.Add(address);
             }
 
@@ -274,7 +286,7 @@ public partial class WhitelistContract
 
             foreach (var address in infoId.AddressList.Value)
             {
-                State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address] = infoId.Id;
+                State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address.Address] = infoId.Id;
             }
 
             var addressList = State.TagInfoIdAddressListMap[whitelistInfo.WhitelistId][infoId.Id] ?? new AddressList();
@@ -313,13 +325,14 @@ public partial class WhitelistContract
                 {
                     foreach (var address in addressList.Value)
                     {
-                        if (!addressInWhitelist.Value.Contains(address))
+                        if (!addressInWhitelist.Value.Select(x => x.Address).Contains(address.Address))
                         {
                             throw new AssertionException($"Address does not exist Or already been removed.{address}");
                         }
 
-                        addressInWhitelist.Value.Remove(address);
-                        toRemove.AddressList.Value.Add(address);
+                        var targetAddress = addressInWhitelist.Value.SingleOrDefault(i => i.Address == address.Address);
+                        addressInWhitelist.Value.Remove(targetAddress);
+                        toRemove.AddressList.Value.Add(targetAddress);
                     }
                 }
             }
@@ -370,14 +383,15 @@ public partial class WhitelistContract
             foreach (var address in infoId.AddressList.Value)
             {
                 var addressList = State.TagInfoIdAddressListMap[whitelistInfo.WhitelistId][infoId.Id];
-                if (!targetExtraInfo.AddressList.Value.Contains(address))
+                if (!targetExtraInfo.AddressList.Value.Select(x => x.Address).Contains(address.Address))
                 {
                     throw new AssertionException($"ExtraInfo does not exist Or already been removed.{address}");
                 }
 
-                targetExtraInfo.AddressList.Value.Remove(address);
-                addressList.Value.Remove(address);
-                State.AddressTagInfoIdMap[whitelistInfo.WhitelistId].Remove(address);
+                var targetAddress = targetExtraInfo.AddressList.Value.SingleOrDefault(i => i.Address == address.Address);
+                targetExtraInfo.AddressList.Value.Remove(targetAddress);
+                addressList.Value.Remove(targetAddress);
+                State.AddressTagInfoIdMap[whitelistInfo.WhitelistId].Remove(address.Address);
             }
         }
 
@@ -402,7 +416,7 @@ public partial class WhitelistContract
         {
             extraInfoIdList.Value.Add(new ExtraInfoId
             {
-                Id = State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address] ?? null,
+                Id = State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address.Address] ?? null,
                 AddressList = new AddressList
                 {
                     Value = { address }
@@ -499,7 +513,8 @@ public partial class WhitelistContract
         var tagIdBefore = new Hash();
         foreach (var address in input.ExtraInfoList.AddressList.Value)
         {
-            tagIdBefore = State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address];
+            address.CreateTime = Context.CurrentBlockTime;
+            tagIdBefore = State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address.Address];
             var extraInfoAddressBefore = whitelistInfo.ExtraInfoIdList.Value.SingleOrDefault(i => i.Id == tagIdBefore);
             var extraInfoAddressAfter =
                 whitelistInfo.ExtraInfoIdList.Value.SingleOrDefault(i => i.Id == input.ExtraInfoList.Id);
@@ -508,7 +523,8 @@ public partial class WhitelistContract
                 throw new AssertionException($"Incorrect address and extraInfoId.{tagIdBefore}");
             }
 
-            extraInfoAddressBefore.AddressList.Value.Remove(address);
+            var targetAddress = extraInfoAddressBefore.AddressList.Value.SingleOrDefault(i => i.Address == address.Address);
+            extraInfoAddressBefore.AddressList.Value.Remove(targetAddress);
             if (extraInfoAddressAfter == null)
             {
                 extraInfoAddressAfter = new ExtraInfoId()
@@ -533,7 +549,7 @@ public partial class WhitelistContract
                 State.TagInfoIdAddressListMap[whitelistInfo.WhitelistId][input.ExtraInfoList.Id] = addressList;
             }
 
-            State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address] = input.ExtraInfoList.Id;
+            State.AddressTagInfoIdMap[whitelistInfo.WhitelistId][address.Address] = input.ExtraInfoList.Id;
             State.TagInfoIdAddressListMap[whitelistInfo.WhitelistId][tagIdBefore].Value.Remove(address);
         }
 
@@ -559,17 +575,35 @@ public partial class WhitelistContract
     {
         AssertWhitelistIsAvailable(input.WhitelistId);
         var whitelist = AssertWhitelistManager(input.WhitelistId);
-        Assert(!whitelist.Manager.Value.Contains(input.Manager) &&
-               !State.ManagerListMap[whitelist.WhitelistId].Value.Contains(input.Manager),
+        Assert(!whitelist.Manager.Value.Select(x => x.Address).Contains(input.Manager) &&
+               !State.ManagerListMap[whitelist.WhitelistId].Value.Select(x => x.Address).Contains(input.Manager),
             $"Manager already exists.{input}");
-        whitelist.Manager.Value.Remove(Context.Sender);
-        whitelist.Manager.Value.Add(input.Manager);
+        whitelist.Manager.Value.Remove(new AddressTime
+        {
+            Address = Context.Sender
+        });
+        whitelist.Manager.Value.Add(new AddressTime
+        {
+            Address = input.Manager
+        });
         var whitelistInfo = GetWhitelist(whitelist.WhitelistId);
-        whitelistInfo.Manager.Value.Remove(Context.Sender);
-        whitelistInfo.Manager.Value.Add(input.Manager);
+        whitelistInfo.Manager.Value.Remove(new AddressTime
+        {
+            Address = Context.Sender
+        });
+        whitelistInfo.Manager.Value.Add(new AddressTime
+        {
+            Address = input.Manager
+        });
         State.WhitelistInfoMap[whitelist.WhitelistId] = whitelist;
-        State.ManagerListMap[whitelist.WhitelistId].Value.Remove(Context.Sender);
-        State.ManagerListMap[whitelist.WhitelistId].Value.Add(input.Manager);
+        State.ManagerListMap[whitelist.WhitelistId].Value.Remove(new AddressTime
+        {
+            Address = Context.Sender
+        });
+        State.ManagerListMap[whitelist.WhitelistId].Value.Add(new AddressTime
+        {
+            Address = input.Manager
+        });
         Context.Fire(new ManagerTransferred()
         {
             WhitelistId = whitelist.WhitelistId,
@@ -671,7 +705,7 @@ public partial class WhitelistContract
             {
                 foreach (var address in addresses.Value)
                 {
-                    State.AddressTagInfoIdMap[input.WhitelistId].Remove(address);
+                    State.AddressTagInfoIdMap[input.WhitelistId].Remove(address.Address);
                 }
             }
         }

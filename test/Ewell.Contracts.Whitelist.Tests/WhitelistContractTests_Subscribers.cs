@@ -66,24 +66,24 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = subscribe.WhitelistId,
                 ExtraInfoId = new ExtraInfoId()
                 {
-                    AddressList = new AddressList(){Value = { User1Address }},
+                    AddressList = new AddressList(){Value = { new AddressTime{Address = User1Address} }},
                     Id = tagId
                 }
             });
             var consumedList = await WhitelistContractStub.GetConsumedList.CallAsync(subscribeId);
             consumedList.ExtraInfoIdList.Value.Count.ShouldBe(1);
             consumedList.WhitelistId.ShouldBe(subscribe.WhitelistId);
-            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
+            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
             consumedList.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(subscribe.WhitelistId,_projectId,"INFO1"));
             var availableList = await WhitelistContractStub.GetAvailableWhitelist.CallAsync(subscribeId);
             availableList.Value.Count.ShouldBe(2);
-            availableList.Value[0].AddressList.Value[0].ShouldBe(User2Address);
+            availableList.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
             {
                 var log = ConsumedListAdded.Parser
                     .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name == nameof(ConsumedListAdded))
                         .NonIndexed).ExtraInfoIdList;
                 log.Value.Count.ShouldBe(1);
-                log.Value[0].AddressList.Value[0].ShouldBe(User1Address);
+                log.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
                 log.Value[0].Id.ShouldBe(CalculateId(subscribe.WhitelistId,_projectId,"INFO1"));
                 
             }
@@ -102,7 +102,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = subscribe.WhitelistId,
                 ExtraInfoId = new ExtraInfoId()
                 {
-                    AddressList = new AddressList{Value = { User1Address }},
+                    AddressList = new AddressList{Value = { new AddressTime{Address = User1Address} }},
                     Id = CalculateId(subscribe.WhitelistId,_projectId,"INFO3")
                 }
             });
@@ -120,7 +120,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = subscribe.WhitelistId,
                 ExtraInfoId = new ExtraInfoId()
                 {
-                    AddressList = new AddressList{Value = { User3Address }},
+                    AddressList = new AddressList{Value = { new AddressTime{Address = User3Address} }},
                     Id = CalculateId(subscribe.WhitelistId,_projectId,"INFO3")
                 }
             });
@@ -128,14 +128,14 @@ namespace Ewell.Contracts.Whitelist
             consumedList.ExtraInfoIdList.Value.Count.ShouldBe(2);
             consumedList.WhitelistId.ShouldBe(subscribe.WhitelistId);
             consumedList.ExtraInfoIdList.Value[0].AddressList.Value.Count.ShouldBe(1);
-            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[0].ShouldBe(User1Address);
+            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[0].Address.ShouldBe(User1Address);
             consumedList.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(subscribe.WhitelistId,_projectId,"INFO1"));
             consumedList.ExtraInfoIdList.Value[1].AddressList.Value.Count.ShouldBe(1);
-            consumedList.ExtraInfoIdList.Value[1].AddressList.Value[0].ShouldBe(User3Address);
+            consumedList.ExtraInfoIdList.Value[1].AddressList.Value[0].Address.ShouldBe(User3Address);
             consumedList.ExtraInfoIdList.Value[1].Id.ShouldBe(CalculateId(subscribe.WhitelistId,_projectId,"INFO3"));
             var availableList = await WhitelistContractStub.GetAvailableWhitelist.CallAsync(subscribeId);
             availableList.Value.Count.ShouldBe(2);
-            availableList.Value[1].AddressList.Value.Count.ShouldBe(1);
+            availableList.Value[1].AddressList.Value.Count.ShouldBe(2);
         }
         
         [Fact]
@@ -149,7 +149,7 @@ namespace Ewell.Contracts.Whitelist
                 WhitelistId = subscribe.WhitelistId,
                 ExtraInfoId = new ExtraInfoId()
                 {
-                    AddressList = new AddressList{Value = { User2Address }},
+                    AddressList = new AddressList{Value = { new AddressTime{Address = User2Address} }},
                     Id = CalculateId(subscribe.WhitelistId,_projectId,"INFO1")
                 }
             });
@@ -157,12 +157,12 @@ namespace Ewell.Contracts.Whitelist
             consumedList.ExtraInfoIdList.Value.Count.ShouldBe(1);
             consumedList.WhitelistId.ShouldBe(subscribe.WhitelistId);
             consumedList.ExtraInfoIdList.Value[0].AddressList.Value.Count.ShouldBe(2);
-            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[1].ShouldBe(User2Address);
+            consumedList.ExtraInfoIdList.Value[0].AddressList.Value[1].Address.ShouldBe(User2Address);
             consumedList.ExtraInfoIdList.Value[0].Id.ShouldBe(CalculateId(subscribe.WhitelistId,_projectId,"INFO1"));
             
             var availableList = await WhitelistContractStub.GetAvailableWhitelist.CallAsync(subscribeId);
             availableList.Value.Count.ShouldBe(2);
-            availableList.Value[0].AddressList.Value.Count.ShouldBe(0);
+            availableList.Value[0].AddressList.Value.Count.ShouldBe(2);
             availableList.Value[1].AddressList.Value.Count.ShouldBe(2);
         }
 
@@ -209,15 +209,15 @@ namespace Ewell.Contracts.Whitelist
                 SubscribeId = subscribeId,
                 ManagerList = new AddressList
                 {
-                    Value = { User5Address,User6Address }
+                    Value = { new AddressTime{Address = User5Address},new AddressTime{Address = User6Address} }
                 }
             });
             {
                 var manager = await WhitelistContractStub.GetSubscribeManagerList.CallAsync(subscribeId);
                 manager.Value.Count.ShouldBe(3);
-                manager.Value[0].ShouldBe(DefaultAddress);
-                manager.Value[1].ShouldBe(User5Address);
-                manager.Value[2].ShouldBe(User6Address);
+                manager.Value[0].Address.ShouldBe(DefaultAddress);
+                manager.Value[1].Address.ShouldBe(User5Address);
+                manager.Value[2].Address.ShouldBe(User6Address);
             }
             {
                 var subscribeIdList = await WhitelistContractStub.GetSubscribeIdByManager.CallAsync(User5Address);
@@ -236,7 +236,7 @@ namespace Ewell.Contracts.Whitelist
                 SubscribeId = subscribeId,
                 ManagerList = new AddressList
                 {
-                    Value = { DefaultAddress }
+                    Value = { new AddressTime{Address = DefaultAddress} }
                 }
             });
             executionResult.TransactionResult.Error.ShouldContain("Managers already exists.");
@@ -251,13 +251,13 @@ namespace Ewell.Contracts.Whitelist
                 SubscribeId = subscribeId,
                 ManagerList = new AddressList
                 {
-                    Value = { User5Address }
+                    Value = { new AddressTime{Address = User5Address} }
                 }
             });
             {
                 var manager = await WhitelistContractStub.GetSubscribeManagerList.CallAsync(subscribeId);
                 manager.Value.Count.ShouldBe(2);
-                manager.Value[1].ShouldBe(User6Address);
+                manager.Value[1].Address.ShouldBe(User6Address);
             }
             {
                 var exception = await WhitelistContractStub.GetSubscribeIdByManager.CallWithExceptionAsync(User5Address);
@@ -278,14 +278,14 @@ namespace Ewell.Contracts.Whitelist
                 SubscribeId = subscribeId,
                 ManagerList = new AddressList
                 {
-                    Value = { User3Address }
+                    Value = { new AddressTime{Address = User3Address} }
                 }
             });
             exceptionAsync.TransactionResult.Error.ShouldContain("Managers doesn't exists.");
             {
                 var manager = await WhitelistContractStub.GetSubscribeManagerList.CallAsync(subscribeId);
                 manager.Value.Count.ShouldBe(3);
-                manager.Value[2].ShouldBe(User6Address);
+                manager.Value[2].Address.ShouldBe(User6Address);
             }
             {
                 var exception = await WhitelistContractStub.GetSubscribeIdByManager.CallWithExceptionAsync(User3Address);

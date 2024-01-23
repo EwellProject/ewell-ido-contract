@@ -41,7 +41,8 @@ public partial class WhitelistContract
     private WhitelistInfo AssertWhitelistManager(Hash whitelistId)
     {
         var whitelistInfo = GetWhitelist(whitelistId);
-        Assert(whitelistInfo.Manager.Value.Contains(Context.Sender),
+        var managerAddresses = whitelistInfo.Manager.Value.Select(x => x.Address);
+        Assert(managerAddresses.Contains(Context.Sender),
             $"{Context.Sender} is not the manager of the whitelist.");
         return whitelistInfo;
     }
@@ -70,7 +71,8 @@ public partial class WhitelistContract
     private void AssertSubscribeManager(Hash subscribeId, Address address)
     {
         var managerList = State.SubscribeManagerListMap[subscribeId];
-        if (!managerList.Value.Contains(address))
+        var managerAddresses = managerList.Value.Select(x => x.Address);
+        if (!managerAddresses.Contains(address))
         {
             throw new AssertionException($"No permission.{address}");
         }
@@ -108,7 +110,8 @@ public partial class WhitelistContract
             throw new AssertionException($"Incorrect ExtraInfo id.{infoId}");
         }
 
-        if (infoId.AddressList.Value.Select(address => extraInfo.AddressList.Value.Contains(address))
+        if (infoId.AddressList.Value.Select(x => x.Address)
+            .Select(address => extraInfo.AddressList.Value.Select(x => x.Address).Contains(address))
             .Any(ifExist => !ifExist))
         {
             throw new AssertionException($"ExtraInfo doesn't exist in the available whitelist.{infoId}");
@@ -193,10 +196,13 @@ public partial class WhitelistContract
 
     private AddressList SetManagerList(Hash whitelistId, Address creator, AddressList input)
     {
-        var managerList = input != null ? input.Value.Distinct().ToList() : new List<Address>();
-        if (!managerList.Contains(creator ?? Context.Sender))
+        var managerList = input != null ? input.Value.Distinct().ToList() : new List<AddressTime>();
+        if (!managerList.Select(x => x.Address).Contains(creator ?? Context.Sender))
         {
-            managerList.Add(creator ?? Context.Sender);
+            managerList.Add(new AddressTime
+            {
+                Address = creator ?? Context.Sender
+            });
         }
 
         State.ManagerListMap[whitelistId] = new AddressList() { Value = { managerList } };
@@ -205,10 +211,13 @@ public partial class WhitelistContract
 
     private AddressList SetSubscribeManagerList(Hash subscribeId, Address creator, AddressList input)
     {
-        var managerList = input != null ? input.Value.Distinct().ToList() : new List<Address>();
-        if (!managerList.Contains(creator ?? Context.Sender))
+        var managerList = input != null ? input.Value.Distinct().ToList() : new List<AddressTime>();
+        if (!managerList.Select(x => x.Address).Contains(creator ?? Context.Sender))
         {
-            managerList.Add(creator ?? Context.Sender);
+            managerList.Add(new AddressTime
+            {
+                Address = creator ?? Context.Sender
+            });
         }
 
         State.SubscribeManagerListMap[subscribeId] = new AddressList() { Value = { managerList } };
@@ -219,9 +228,9 @@ public partial class WhitelistContract
     {
         foreach (var manager in managerList.Value)
         {
-            var whitelistIdList = State.WhitelistIdMap[manager] ?? new WhitelistIdList();
+            var whitelistIdList = State.WhitelistIdMap[manager.Address] ?? new WhitelistIdList();
             whitelistIdList.WhitelistId.Add(whitelistId);
-            State.WhitelistIdMap[manager] = whitelistIdList;
+            State.WhitelistIdMap[manager.Address] = whitelistIdList;
         }
     }
 
@@ -235,9 +244,9 @@ public partial class WhitelistContract
     {
         foreach (var manager in managerList.Value)
         {
-            var subscribeIdList = State.ManagerSubscribeIdListMap[manager] ?? new HashList();
+            var subscribeIdList = State.ManagerSubscribeIdListMap[manager.Address] ?? new HashList();
             subscribeIdList.Value.Add(subscribeId);
-            State.ManagerSubscribeIdListMap[manager] = subscribeIdList;
+            State.ManagerSubscribeIdListMap[manager.Address] = subscribeIdList;
         }
     }
 
@@ -245,10 +254,10 @@ public partial class WhitelistContract
     {
         foreach (var manager in managerList.Value)
         {
-            var whitelistIdList = State.WhitelistIdMap[manager];
+            var whitelistIdList = State.WhitelistIdMap[manager.Address];
             if (whitelistIdList == null) continue;
             whitelistIdList.WhitelistId.Remove(whitelistId);
-            State.WhitelistIdMap[manager] = whitelistIdList;
+            State.WhitelistIdMap[manager.Address] = whitelistIdList;
         }
     }
 
@@ -266,10 +275,10 @@ public partial class WhitelistContract
     {
         foreach (var manager in managerList.Value)
         {
-            var subscribeIdList = State.ManagerSubscribeIdListMap[manager];
+            var subscribeIdList = State.ManagerSubscribeIdListMap[manager.Address];
             if (subscribeIdList == null) continue;
             subscribeIdList.Value.Remove(subscribeId);
-            State.ManagerSubscribeIdListMap[manager] = subscribeIdList;
+            State.ManagerSubscribeIdListMap[manager.Address] = subscribeIdList;
         }
     }
 }

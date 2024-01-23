@@ -131,7 +131,7 @@ public partial class WhitelistContract
     {
         var whitelist = GetWhitelist(input.WhitelistId);
         var addressLists = whitelist.ExtraInfoIdList.Value.Select(e => e.AddressList).ToList();
-        return addressLists.Any(addressList => addressList.Value.Contains(input.Address))
+        return addressLists.Any(addressList => addressList.Value.Select(x => x.Address).Contains(input.Address))
             ? new BoolValue { Value = true }
             : new BoolValue();
     }
@@ -147,7 +147,7 @@ public partial class WhitelistContract
 
         var addressList = State.TagInfoIdAddressListMap[whitelist.WhitelistId][input.ExtraInfoId.Id] ??
                           new AddressList();
-        return input.ExtraInfoId.AddressList.Value.Any(address => !addressList.Value.Contains(address))
+        return input.ExtraInfoId.AddressList.Value.Select(x => x.Address).Any(address => !addressList.Value.Select(x => x.Address).Contains(address))
             ? new BoolValue() { Value = false }
             : new BoolValue() { Value = true };
     }
@@ -155,7 +155,7 @@ public partial class WhitelistContract
     public override BoolValue GetManagerExistFromWhitelist(GetManagerExistFromWhitelistInput input)
     {
         var whitelistIdList = State.ManagerListMap[input.WhitelistId] ?? new AddressList();
-        var ifExist = whitelistIdList.Value.Contains(input.Manager);
+        var ifExist = whitelistIdList.Value.Select(x => x.Address).Contains(input.Manager);
         return new BoolValue { Value = ifExist };
     }
 
