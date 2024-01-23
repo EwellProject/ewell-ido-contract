@@ -36,43 +36,14 @@ namespace Ewell.Contracts.Ido
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
-            ValidTokenBalance(input.ProjectCurrency, virtualAddress, input.CrowdFundingIssueAmount);
             State.ProjectAddressMap[id] = virtualAddress;
+            
+            TransferFrom(virtualAddressHash, Context.Sender, virtualAddress, input.ProjectCurrency, input.CrowdFundingIssueAmount);
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
-            var projectInfo = new ProjectInfo()
-            {
-                ProjectId = id,
-                AcceptedCurrency = input.AcceptedCurrency,
-                ProjectCurrency = input.ProjectCurrency,
-                CrowdFundingType = input.CrowdFundingType,
-                CrowdFundingIssueAmount = input.CrowdFundingIssueAmount,
-                PreSalePrice = input.PreSalePrice,
-                StartTime = input.StartTime,
-                EndTime = input.EndTime,
-                MinSubscription = input.MinSubscription,
-                MaxSubscription = input.MaxSubscription,
-                IsBurnRestToken = input.IsBurnRestToken,
-                AdditionalInfo = input.AdditionalInfo,
-                Creator = Context.Sender,
-                ToRaisedAmount = toRaisedAmount,
-                Enabled = true,
-                VirtualAddressHash = virtualAddressHash,
-                TokenReleaseTime = input.TokenReleaseTime
-            };
+
+            var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, toRaisedAmount, virtualAddressHash);
             State.ProjectInfoMap[id] = projectInfo;
-            var listInfo = new ProjectListInfo()
-            {
-                ProjectId = id,
-                PublicSalePrice = input.PublicSalePrice,
-                LiquidityLockProportion = input.LiquidityLockProportion,
-                ListMarketInfo = input.ListMarketInfo,
-                UnlockTime = input.UnlockTime,
-                LatestPeriod = 0,
-                TotalPeriod = input.TotalPeriod,
-                FirstDistributeProportion = input.FirstDistributeProportion,
-                RestDistributeProportion = input.RestDistributeProportion,
-                PeriodDuration = input.PeriodDuration
-            };
+            var listInfo = Extensions.CreateProjectListInfo(input, id);
             State.ProjectListInfoMap[id] = listInfo;
             
             //SubscribeWhiteList
@@ -102,35 +73,8 @@ namespace Ewell.Contracts.Ido
                     IsEnableWhitelist = input.IsEnableWhitelist
                 });
             }
-            
-            Context.Fire(new ProjectRegistered()
-            {
-                ProjectId = id,
-                AcceptedCurrency = input.AcceptedCurrency,
-                ProjectCurrency = input.ProjectCurrency,
-                CrowdFundingType = input.CrowdFundingType,
-                CrowdFundingIssueAmount = input.CrowdFundingIssueAmount,
-                PreSalePrice = input.PreSalePrice,
-                StartTime = input.StartTime,
-                EndTime = input.EndTime,
-                MinSubscription = input.MinSubscription,
-                MaxSubscription = input.MaxSubscription,
-                PublicSalePrice = input.PublicSalePrice,
-                ListMarketInfo = input.ListMarketInfo,
-                LiquidityLockProportion = input.LiquidityLockProportion,
-                UnlockTime = input.UnlockTime,
-                IsEnableWhitelist = input.IsEnableWhitelist,
-                WhitelistId = input.WhitelistId,
-                IsBurnRestToken = input.IsBurnRestToken,
-                TotalPeriod = input.TotalPeriod,
-                AdditionalInfo = input.AdditionalInfo,
-                ToRaisedAmount = toRaisedAmount,
-                Creator = Context.Sender,
-                FirstDistributeProportion = input.FirstDistributeProportion,
-                RestDistributeProportion = input.RestDistributeProportion,
-                PeriodDuration = input.PeriodDuration,
-                TokenReleaseTime = input.TokenReleaseTime
-            });
+
+            Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, id, Context.Sender, toRaisedAmount));
             return new Empty();
         }
 

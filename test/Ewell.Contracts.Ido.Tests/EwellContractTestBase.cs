@@ -51,7 +51,7 @@ namespace Ewell.Contracts.Ido
         }
         
         internal TokenContractImplContainer.TokenContractImplStub TokenContractStub =>
-            GetTokenContractStub(SampleAccount.Accounts.First().KeyPair);
+            GetTokenContractStub(AdminKeyPair);
 
         internal TokenContractImplContainer.TokenContractImplStub GetTokenContractStub(
             ECKeyPair senderKeyPair)

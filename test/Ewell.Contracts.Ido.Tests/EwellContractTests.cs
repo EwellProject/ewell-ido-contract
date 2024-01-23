@@ -32,20 +32,33 @@ namespace Ewell.Contracts.Ido
             });
             var whitelistAddress = await AdminStub.GetWhitelistContractAddress.CallAsync(new Empty());
             whitelistAddress.ShouldNotBe(new Address());
-            var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
+            /*var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
             await TokenContractStub.Transfer.SendAsync(new TransferInput()
             {
                 Amount = 1_00000000,
                 Symbol = TestSymbol,
                 Memo = "ForUserClaim",
                 To = virtualAddress
-            });
+            });*/
         }
 
         [Fact]
         public async Task RegisterTest()
         {
             await InitializeTest();
+            
+            var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
+            var senderBalanceBefore = await GetBalanceAsync(TestSymbol, AdminAddress);
+            var virtualAddressBalanceBefore = await GetBalanceAsync(TestSymbol, virtualAddress);
+            
+            //approve first
+            await TokenContractStub.Approve.SendAsync(new ApproveInput()
+           {
+               Amount = 1_00000000,
+               Symbol = TestSymbol,
+               Spender = virtualAddress
+           });
+            
             var registerInput = new RegisterInput()
             {
                 AcceptedCurrency = "ELF",
@@ -83,6 +96,14 @@ namespace Ewell.Contracts.Ido
             };
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
 
+            
+            //check balance
+            var senderBalanceAfter = await GetBalanceAsync(TestSymbol, AdminAddress);
+            var virtualAddressBalanceAfter = await GetBalanceAsync(TestSymbol, virtualAddress);
+
+            senderBalanceAfter.ShouldBe(99999900000000);
+            virtualAddressBalanceAfter.ShouldBe(100000000);
+            
             var projectId = ProjectRegistered.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
                     .NonIndexed)
@@ -401,6 +422,14 @@ namespace Ewell.Contracts.Ido
         {
             await InitializeTest();
             var virtualAddressExpect = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
+            
+            await TokenContractStub.Approve.SendAsync(new ApproveInput()
+            {
+                Amount = 1_00000000,
+                Symbol = TestSymbol,
+                Spender = virtualAddressExpect
+            });
+
             var registerInput = new RegisterInput()
             {
                 AcceptedCurrency = "ELF",
