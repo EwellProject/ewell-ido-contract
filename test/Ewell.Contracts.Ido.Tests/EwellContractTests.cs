@@ -28,18 +28,28 @@ namespace Ewell.Contracts.Ido
             await CreateAndGetTokenNew();
             await AdminStub.Initialize.SendAsync(new InitializeInput()
             {
-                WhitelistContract = WhitelistContractAddress
+                WhitelistContract = WhitelistContractAddress,
+                ProxyAccountContractAddress = ProxyAccountContractAddress
             });
             var whitelistAddress = await AdminStub.GetWhitelistContractAddress.CallAsync(new Empty());
             whitelistAddress.ShouldNotBe(new Address());
-            /*var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
-            await TokenContractStub.Transfer.SendAsync(new TransferInput()
-            {
-                Amount = 1_00000000,
-                Symbol = TestSymbol,
-                Memo = "ForUserClaim",
-                To = virtualAddress
-            });*/
+            
+            var proxyAccountContract = await AdminStub.GetProxyAccountContract.CallAsync(new Empty());
+            proxyAccountContract.ShouldNotBe(new Address());
+        }
+        
+        [Fact]
+        public async Task SetProxyAccountContract_Test()
+        {
+            await InitializeTest();
+            var result = await TomStub.SetProxyAccountContract.SendWithExceptionAsync(ProxyAccountContractAddress);
+            result.TransactionResult.Error.ShouldContain("No permission.");
+            result = await AdminStub.SetProxyAccountContract.SendWithExceptionAsync(new Address());
+            result.TransactionResult.Error.ShouldContain("Invalid param");
+            result = await AdminStub.SetProxyAccountContract.SendAsync(ProxyAccountContractAddress);
+            result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var proxyAccountContract = await AdminStub.GetProxyAccountContract.CallAsync(new Empty());
+            proxyAccountContract.ShouldBe(ProxyAccountContractAddress);
         }
 
         [Fact]

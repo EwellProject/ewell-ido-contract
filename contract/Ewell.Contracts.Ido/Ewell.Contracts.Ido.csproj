@@ -40,6 +40,9 @@
         <ContractReference Include="..\..\protobuf\whitelist_contract.proto">
             <Link>Protobuf\Proto\reference\whitelist_contract.proto</Link>
         </ContractReference>
+        <ContractReference Include="..\..\protobuf\proxy_account_contract.proto">
+            <Link>Protobuf\Proto\reference\proxy_account_contract.proto</Link>
+        </ContractReference>
     </ItemGroup>
     <ItemGroup>
       <PackageReference Include="AElf.Contracts.Genesis" Version="1.2.0" />

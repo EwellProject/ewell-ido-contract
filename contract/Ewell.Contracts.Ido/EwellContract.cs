@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
+using AElf;
 using AElf.Contracts.MultiToken;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
@@ -18,6 +18,15 @@ namespace Ewell.Contracts.Ido
                 Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
             State.WhitelistContract.Value = input.WhitelistContract;
             State.Admin.Value = Context.Sender;
+            State.ProxyAccountContract.Value = input.ProxyAccountContractAddress;
+            return new Empty();
+        }
+        
+        public override Empty SetProxyAccountContract(Address input)
+        {
+            Assert(State.Admin.Value == Context.Sender, "No permission.");
+            Assert(input != null && !input.Value.IsNullOrEmpty(), "Invalid param.");
+            State.ProxyAccountContract.Value = input;
             return new Empty();
         }
 

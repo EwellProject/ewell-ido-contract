@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.Ido", "cont
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.Whitelist.Tests", "test\Ewell.Contracts.Whitelist.Tests\Ewell.Contracts.Whitelist.Tests.csproj", "{715A8BF4-29B8-47AE-A84F-349F333AA845}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ewell.Contracts.MockProxyAccountContract", "test\Ewell.Contracts.MockProxyAccountContract\Ewell.Contracts.MockProxyAccountContract.csproj", "{09BE29E9-467B-4E85-981F-C7C337E7626C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{715A8BF4-29B8-47AE-A84F-349F333AA845}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{715A8BF4-29B8-47AE-A84F-349F333AA845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{715A8BF4-29B8-47AE-A84F-349F333AA845}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09BE29E9-467B-4E85-981F-C7C337E7626C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09BE29E9-467B-4E85-981F-C7C337E7626C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09BE29E9-467B-4E85-981F-C7C337E7626C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09BE29E9-467B-4E85-981F-C7C337E7626C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -82,6 +88,7 @@ Global
 		{A1F678F4-0C1D-423A-8AFC-7C37E7C8503D} = {5C980166-C987-470D-AEE0-3858A170A903}
 		{574138C4-06C1-4153-B5D3-9666404BC26E} = {5C980166-C987-470D-AEE0-3858A170A903}
 		{715A8BF4-29B8-47AE-A84F-349F333AA845} = {DBC47323-E6A2-42A2-A624-CE2EE6139567}
+		{09BE29E9-467B-4E85-981F-C7C337E7626C} = {DBC47323-E6A2-42A2-A624-CE2EE6139567}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D7426B41-E959-40E4-9ED8-ED8D9C50F133}

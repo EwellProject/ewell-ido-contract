@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AElf.Boilerplate.TestBase;
 using AElf.Contracts.MultiToken;
+using AElf.Contracts.ProxyAccountContract;
 using AElf.ContractTestBase.ContractTestKit;
 using AElf.Cryptography.ECDSA;
 using AElf.CSharp.Core;
@@ -37,6 +38,8 @@ namespace Ewell.Contracts.Ido
 
         internal readonly Address WhitelistContractAddress;
 
+        internal readonly Address ProxyAccountContractAddress;
+
         internal readonly IBlockchainService blockChainService;
 
         internal readonly IBlockTimeProvider blockTimeProvider;
@@ -67,7 +70,13 @@ namespace Ewell.Contracts.Ido
             return Application.ServiceProvider.GetRequiredService<IContractTesterFactory>()
                 .Create<WhitelistContractContainer.WhitelistContractStub>(WhitelistContractAddress, senderKeyPair);
         }
-
+        
+        internal ProxyAccountContractContainer.ProxyAccountContractStub GetProxyAccountContractStub(
+            ECKeyPair senderKeyPair)
+        {
+            return GetTester<ProxyAccountContractContainer.ProxyAccountContractStub>(ProxyAccountContractAddress, senderKeyPair);
+        }
+        
         public EwellContractTestBase()
         {
             blockChainService = Application.ServiceProvider.GetRequiredService<IBlockchainService>();
@@ -79,6 +88,10 @@ namespace Ewell.Contracts.Ido
             WhitelistContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
                 KernelConstants.DefaultRunnerCategory,
                 File.ReadAllBytes(typeof(WhitelistContract).Assembly.Location), SampleAccount.Accounts[0].KeyPair));
+            
+            ProxyAccountContractAddress = AsyncHelper.RunSync(() => DeployContractAsync(
+                KernelConstants.DefaultRunnerCategory,
+                File.ReadAllBytes(typeof(MockProxyAccountContract.MockProxyAccountContract).Assembly.Location), SampleAccount.Accounts[0].KeyPair));
             
             AsyncHelper.RunSync(() => CreateSeedNftCollection(TokenContractStub));
         }
@@ -111,6 +124,10 @@ namespace Ewell.Contracts.Ido
 
         internal TokenContractImplContainer.TokenContractImplStub TomTokenContractStub =>
             GetTokenContractStub(UserTomKeyPair);
+        
+        
+        internal ProxyAccountContractContainer.ProxyAccountContractStub ProxyAccountStub =>
+            GetProxyAccountContractStub(AdminKeyPair);
         
         internal async Task CreateSeedNftCollection(TokenContractImplContainer.TokenContractImplStub stub)
         {

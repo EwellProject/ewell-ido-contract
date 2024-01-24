@@ -49,6 +49,10 @@ service EwellContract {
     }
     rpc ClaimLiquidatedDamageAll (aelf.Hash) returns (google.protobuf.Empty) {
     }
+
+    rpc SetProxyAccountContract(aelf.Address) returns (google.protobuf.Empty){
+    }
+    
     //view function
     rpc GetWhitelistContractAddress(google.protobuf.Empty)  returns (aelf.Address) {
         option (aelf.is_view) = true;
@@ -87,11 +91,15 @@ service EwellContract {
     rpc GetPendingProjectAddress(aelf.Address) returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
+    rpc GetProxyAccountContract(google.protobuf.Empty) returns (aelf.Address) {
+        option (aelf.is_view) = true;
+    }
 }
 
 //input
 message InitializeInput{
     aelf.Address whitelist_contract = 1;
+    aelf.Address proxy_account_contract_address = 2;
 }
 message RegisterInput {
     string accepted_currency = 1;

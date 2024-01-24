@@ -1,5 +1,6 @@
 using AElf;
 using AElf.Contracts.MultiToken;
+using AElf.Contracts.ProxyAccountContract;
 using AElf.CSharp.Core;
 using AElf.Sdk.CSharp;
 using AElf.Types;
@@ -18,16 +19,25 @@ namespace Ewell.Contracts.Ido
             
             Assert(!string.IsNullOrEmpty(tokenInfo.Symbol), $"Token {token} not exists.");
         }
-        
+
         private void ValidTokenSymbolOwner(string token, Address owner)
         {
             var tokenInfo = State.TokenContract.GetTokenInfo.Call(new AElf.Contracts.MultiToken.GetTokenInfoInput
             {
                 Symbol = token
             });
-            
+
             Assert(!string.IsNullOrEmpty(tokenInfo.Symbol), $"Token {token} not exists.");
-            Assert(tokenInfo.Issuer == owner,$"Token {token}'s issuer not {owner}.");
+            if (tokenInfo.Issuer == owner)
+            {
+                return;
+            }
+
+            var proxyAccount = State.ProxyAccountContract.GetProxyAccountByProxyAccountAddress.Call(tokenInfo.Issuer);
+            Assert(proxyAccount != null && proxyAccount.ManagementAddresses.Contains(new ManagementAddress
+            {
+                Address = owner
+            }), $"Token {token}'s issuer does not match with address {owner}.");
         }
 
         private void ValidTokenBalance(string token, Address virtualAddress, long expectBalance)

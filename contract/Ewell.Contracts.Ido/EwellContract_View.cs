@@ -10,6 +10,11 @@ namespace Ewell.Contracts.Ido
             return State.WhitelistContract.Value;
         }
 
+        public override Address GetProxyAccountContract(Empty input)
+        {
+            return State.ProxyAccountContract.Value;
+        }
+        
         public override Address GetTokenAddress(Empty input)
         {
             return State.TokenContract.Value;

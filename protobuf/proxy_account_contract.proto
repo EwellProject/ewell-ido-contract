@@ -1,0 +1,46 @@
+// the version of the language, use proto3 for contracts
+syntax = "proto3";
+
+// some core imports for aelf chain types
+import "aelf/core.proto";
+import "aelf/options.proto";
+import "acs12.proto";
+
+// import for using the google.protobuf.* type.
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+
+// the name of the C# namespace in which the contract code will be,
+// generated code will also be in this namespace.
+option csharp_namespace = "AElf.Contracts.ProxyAccountContract";
+
+// the contract definition: a gRPC service definition.
+service ProxyAccountContract {
+
+  option (aelf.base) = "acs12.proto";
+  // the full name of the C# class that will contain the state (here <namespace>.<state-class-name> format).
+  option (aelf.csharp_state) = "AElf.Contracts.ProxyAccountContract.ProxyAccountContractState";
+
+  rpc ForwardCall(ForwardCallInput) returns (google.protobuf.Empty);
+
+  // View
+  rpc GetProxyAccountByProxyAccountAddress(aelf.Address) returns (ProxyAccount) {option (aelf.is_view) = true;}
+}
+
+//Data structure
+message ProxyAccount {
+  repeated ManagementAddress management_addresses = 1;
+  int32 create_chain_id = 2;
+  aelf.Hash proxy_account_hash = 3;
+}
+
+message ManagementAddress {
+  aelf.Address address = 1;
+}
+
+message ForwardCallInput {
+  aelf.Hash proxy_account_hash = 1;
+  aelf.Address contract_address = 2;
+  string method_name = 3;
+  bytes args = 4;
+}

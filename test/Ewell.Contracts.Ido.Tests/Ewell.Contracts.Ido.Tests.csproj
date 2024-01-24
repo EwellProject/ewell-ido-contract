@@ -54,11 +54,15 @@
         <ContractStub Include="..\..\protobuf\whitelist_contract.proto">
             <Link>Protobuf\Proto\whitelist_contract.proto</Link>
         </ContractStub>
+        <ContractStub Include="..\..\protobuf\proxy_account_contract.proto">
+            <Link>Protobuf\Proto\proxy_account_contract.proto</Link>
+        </ContractStub>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\contract\Ewell.Contracts.Ido\Ewell.Contracts.Ido.csproj" />
         <ProjectReference Include="..\..\contract\Ewell.Contracts.Whitelist\Ewell.Contracts.Whitelist.csproj" />
+        <ProjectReference Include="..\Ewell.Contracts.MockProxyAccountContract\Ewell.Contracts.MockProxyAccountContract.csproj" />
         <ProjectReference Include="..\..\src\AElf.Boilerplate.TestBase\AElf.Boilerplate.TestBase.csproj" />
     </ItemGroup>
 

@@ -10,5 +10,11 @@ namespace Ewell.Contracts.Ido
        }
        
        internal AElf.Contracts.MultiToken.TokenContractContainer.TokenContractReferenceState TokenContract { get; set; }
+       
+       internal AElf.Contracts.ProxyAccountContract.ProxyAccountContractContainer.ProxyAccountContractReferenceState ProxyAccountContract
+       {
+           get;
+           set;
+       }
     }
 }
