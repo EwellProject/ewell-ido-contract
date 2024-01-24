@@ -46,7 +46,9 @@ namespace Ewell.Contracts.Ido
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
             
-            TransferFrom(virtualAddressHash, Context.Sender, virtualAddress, input.ProjectCurrency, input.CrowdFundingIssueAmount);
+            //TransferFrom(virtualAddressHash, Context.Sender, virtualAddress, input.ProjectCurrency, input.CrowdFundingIssueAmount);
+            ValidTokenBalance(input.ProjectCurrency, virtualAddress, input.CrowdFundingIssueAmount);
+
             State.ProjectAddressMap[id] = virtualAddress;
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
 
