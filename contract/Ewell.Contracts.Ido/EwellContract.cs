@@ -25,7 +25,7 @@ namespace Ewell.Contracts.Ido
         {
             ValidTokenSymbolOwner(input.ProjectCurrency, Context.Sender);
             ValidTokenSymbol(input.AcceptedCurrency);
-            Assert(input.MaxSubscription > input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
+            Assert(input.MaxSubscription >= input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
