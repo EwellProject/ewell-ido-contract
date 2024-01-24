@@ -45,9 +45,9 @@ namespace Ewell.Contracts.Ido
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
-            State.ProjectAddressMap[id] = virtualAddress;
             
             TransferFrom(virtualAddressHash, Context.Sender, virtualAddress, input.ProjectCurrency, input.CrowdFundingIssueAmount);
+            State.ProjectAddressMap[id] = virtualAddress;
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
 
             var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, toRaisedAmount, virtualAddressHash);
@@ -83,7 +83,8 @@ namespace Ewell.Contracts.Ido
                 });
             }
 
-            Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, id, Context.Sender, toRaisedAmount));
+            Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, id, Context.Sender, 
+                virtualAddress, toRaisedAmount));
             return new Empty();
         }
 

@@ -46,8 +46,8 @@ public static class Extensions
         };
     }
 
-    public static ProjectRegistered GenerateProjectRegisteredEvent(RegisterInput input, Hash projectId, Address creator,
-        long toRaisedAmount)
+    public static ProjectRegistered GenerateProjectRegisteredEvent(RegisterInput input, Hash projectId, 
+        Address creator, Address virtualAddress, long toRaisedAmount)
     {
         return new ProjectRegistered()
         {
@@ -75,7 +75,8 @@ public static class Extensions
             FirstDistributeProportion = input.FirstDistributeProportion,
             RestDistributeProportion = input.RestDistributeProportion,
             PeriodDuration = input.PeriodDuration,
-            TokenReleaseTime = input.TokenReleaseTime
+            TokenReleaseTime = input.TokenReleaseTime,
+            VirtualAddress = virtualAddress
         };
     }
 }
