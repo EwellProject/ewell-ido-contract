@@ -115,19 +115,6 @@ namespace Ewell.Contracts.Ido
                 });
         }
         
-        private void TransferFrom(Hash virtualAddressHash, Address from, Address to, string symbol, long amount)
-        { 
-            State.TokenContract.TransferFrom.VirtualSend(virtualAddressHash,
-                new TransferFromInput()
-                {
-                    Symbol = symbol,
-                    Amount = amount,
-                    Memo = "TransferOut",
-                    From = from,
-                    To = to
-                });
-        }
-
         private long GetAvailableInvestAmount(Hash projectId, Address user)
         {
 

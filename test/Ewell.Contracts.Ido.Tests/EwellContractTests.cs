@@ -66,7 +66,7 @@ namespace Ewell.Contracts.Ido
            {
                Amount = 1_00000000,
                Symbol = TestSymbol,
-               Spender = virtualAddress
+               Spender = EwellContractAddress
            });
             
             var registerInput = new RegisterInput()
@@ -437,7 +437,7 @@ namespace Ewell.Contracts.Ido
             {
                 Amount = 1_00000000,
                 Symbol = TestSymbol,
-                Spender = virtualAddressExpect
+                Spender = EwellContractAddress
             });
 
             var registerInput = new RegisterInput()

@@ -45,11 +45,10 @@ namespace Ewell.Contracts.Ido
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
-            
-            TransferFrom(virtualAddressHash, Context.Sender, virtualAddress, input.ProjectCurrency, input.CrowdFundingIssueAmount);
             State.ProjectAddressMap[id] = virtualAddress;
+            
+            TransferIn(id, Context.Sender, input.ProjectCurrency, input.CrowdFundingIssueAmount);
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
-
             var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, toRaisedAmount, virtualAddressHash);
             State.ProjectInfoMap[id] = projectInfo;
             var listInfo = Extensions.CreateProjectListInfo(input, id);
