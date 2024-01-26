@@ -14,6 +14,8 @@ public partial class WhitelistContract
         var whitelistHash = CalculateWhitelistHash(Context.Sender, input.ProjectId);
 
         Assert(State.WhitelistInfoMap[whitelistHash] == null, $"Whitelist already exists.{whitelistHash.ToHex()}");
+        Assert(input.ExtraInfoList != null, "ExtraInfoIdList must not be null");
+        AssertWhitelistCount(whitelistHash, input.ExtraInfoList.Value.Sum(x => x.AddressList.Value.Count));
 
         var managerList = SetManagerList(whitelistHash, input.Creator, input.ManagerList);
 
@@ -34,13 +36,6 @@ public partial class WhitelistContract
         var alreadyExistsAddressList = new List<Address>();
         //Remove duplicate addresses.
         var extraInfoList = input.ExtraInfoList.Value;
-        foreach (var extraInfo in extraInfoList)
-        {
-            foreach (var addressTime in extraInfo.AddressList.Value)
-            {
-                addressTime.CreateTime = Context.CurrentBlockTime;
-            }
-        }
         if (input.StrategyType == StrategyType.Basic)
         {
             var addressList = new AddressList();
@@ -53,7 +48,10 @@ public partial class WhitelistContract
                         throw new AssertionException($"Duplicate address: ${address}.");
                     }
 
-                    addressList.Value.Add(address);
+                    addressList.Value.Add(new AddressTime{
+                        Address = address.Address,
+                        CreateTime = Context.CurrentBlockTime
+                    });
                 }
             }
 
@@ -99,6 +97,7 @@ public partial class WhitelistContract
                         throw new AssertionException($"Duplicate address: ${address}.");
                     }
 
+                    address.CreateTime = Context.CurrentBlockTime;
                     alreadyExistsAddressList.Add(address.Address);
                 }
 
@@ -178,10 +177,6 @@ public partial class WhitelistContract
 
         //Add tagInfo with address list.
         if (input.AddressList == null) return tagInfoId;
-        foreach (var addressTime in input.AddressList.Value)
-        {
-            addressTime.CreateTime = Context.CurrentBlockTime;
-        }
         var extraInfoIdList = new ExtraInfoIdList()
         {
             Value =
@@ -243,6 +238,8 @@ public partial class WhitelistContract
         AssertWhitelistInfo(input.WhitelistId);
         AssertWhitelistIsAvailable(input.WhitelistId);
         var whitelistInfo = AssertWhitelistManager(input.WhitelistId);
+        Assert(input.ExtraInfoIdList != null, "ExtraInfoIdList must not be null");
+        AssertWhitelistCount(whitelistInfo.WhitelistId, input.ExtraInfoIdList.Value.Sum(x => x.AddressList.Value.Count));
         var toAddExtraInfoIdList = new ExtraInfoIdList();
         foreach (var infoId in input.ExtraInfoIdList.Value)
         {

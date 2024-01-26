@@ -32,6 +32,17 @@ public partial class WhitelistContract
         return whitelistInfo;
     }
 
+    private void AssertWhitelistCount(Hash whitelistId, int addCount)
+    {
+        var totalCount = addCount;
+        var whitelistInfo = State.WhitelistInfoMap[whitelistId];
+        if (whitelistInfo is { ExtraInfoIdList: not null })
+        {
+            totalCount += whitelistInfo.ExtraInfoIdList.Value.Sum(x => x.AddressList.Value.Count);
+        }
+        Assert(totalCount < WhitelistUserMax, $"Whitelist user too much.{whitelistId.ToHex()}");
+    }
+
     private void AssertWhitelistIsAvailable(Hash whitelistId)
     {
         var whitelistInfo = State.WhitelistInfoMap[whitelistId];
