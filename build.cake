@@ -7,7 +7,7 @@ var rootPath     = "./";
 var srcPath      = rootPath + "src/";
 var contractPath = rootPath + "contract/";
 var testPath     = rootPath + "test/";
-var solution     = rootPath + "Gandanf.Contracts.Controller.sln";
+var solution     = rootPath + "AElf.Contracts.Ewell.sln";
 
 Task("Clean")
     .Description("clean up project cache")

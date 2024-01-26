@@ -156,19 +156,19 @@ message ClaimInput{
 }
 
 message GetInvestDetailInput{
-    aelf.Hash project_id = 1;//项目id
+    aelf.Hash project_id = 1;
     aelf.Address user = 2;
 }
 message GetProfitDetailInput{
-    aelf.Hash project_id = 1;//项目id
+    aelf.Hash project_id = 1;
     aelf.Address user = 2;
 }
 message SetWhitelistIdInput{
-    aelf.Hash project_id = 1;//项目id
+    aelf.Hash project_id = 1;
     bool is_enable_whitelist = 2;
 }
 message ReFundAllInput{
-    aelf.Hash project_id = 1;//项目id
+    aelf.Hash project_id = 1;
     repeated aelf.Address users = 2;
 }
 //Output
@@ -197,8 +197,8 @@ message ProjectInfo{
     AdditionalInfo additional_info = 13;
     aelf.Address creator = 14;
     int64 to_raised_amount = 15;
-    int64 current_raised_amount = 16;//已募集金额
-    bool enabled = 17; //是否取消众筹
+    int64 current_raised_amount = 16;
+    bool enabled = 17; 
     aelf.Hash virtual_address_hash = 18;
     google.protobuf.Timestamp token_release_time = 19;
 } 
@@ -233,10 +233,10 @@ message ClaimedProfitsInfo{
     repeated ClaimedProfit details = 1;
 }
 message ClaimedProfit{
-    aelf.Hash project_id = 1;//项目id
-    int32 latest_period = 2;//当前周期
-    string symbol = 3;//代币名称
-    int64 amount = 4;//金额
+    aelf.Hash project_id = 1;
+    int32 latest_period = 2;
+    string symbol = 3;
+    int64 amount = 4;
 }
 
 message LiquidatedDamageDetails{
@@ -244,9 +244,9 @@ message LiquidatedDamageDetails{
     repeated LiquidatedDamageDetail details = 2; 
 }
 message LiquidatedDamageDetail{
-    aelf.Address user = 1;//用户地址
-    string symbol = 2;//名称
-    int64 amount = 3;//违约金金额
+    aelf.Address user = 1;
+    string symbol = 2;
+    int64 amount = 3;
     bool claimed = 4;
 }
 message AdditionalInfo{
@@ -256,7 +256,7 @@ message ListMarketInfo{
     repeated ListMarket data = 1;
 }
 message ListMarket{
-    aelf.Address market = 1;//用户地址
+    aelf.Address market = 1;
     int32 weight = 2;
 }
 
