@@ -45,6 +45,11 @@
         </ContractReference>
     </ItemGroup>
     <ItemGroup>
+        <ContractBase Include="..\..\protobuf\acs12.proto">
+            <Link>Protobuf\Proto\acs12.proto</Link>
+        </ContractBase>
+    </ItemGroup>
+    <ItemGroup>
       <PackageReference Include="AElf.Contracts.Genesis" Version="1.2.0" />
       <PackageReference Include="AElf.Contracts.MultiToken" Version="1.2.0" />
       <PackageReference Include="AElf.CrossChain" Version="1.2.0" />

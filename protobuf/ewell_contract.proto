@@ -5,10 +5,12 @@ import "aelf/options.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/wrappers.proto";
+import "acs12.proto";
 option csharp_namespace = "Ewell.Contracts.Ido";
 
 service EwellContract {
     option (aelf.csharp_state) = "Ewell.Contracts.Ido.EwellContractState";
+    option (aelf.base) = "acs12.proto";
 
     //admin
     rpc Initialize (InitializeInput) returns (google.protobuf.Empty) {
