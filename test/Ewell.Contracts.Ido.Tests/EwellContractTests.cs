@@ -28,7 +28,7 @@ namespace Ewell.Contracts.Ido
             await CreateAndGetTokenNew();
             await AdminStub.Initialize.SendAsync(new InitializeInput()
             {
-                WhitelistContract = WhitelistContractAddress,
+                WhitelistContractAddress = WhitelistContractAddress,
                 ProxyAccountContractAddress = ProxyAccountContractAddress
             });
             var whitelistAddress = await AdminStub.GetWhitelistContractAddress.CallAsync(new Empty());

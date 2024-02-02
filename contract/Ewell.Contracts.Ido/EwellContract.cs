@@ -13,17 +13,25 @@ namespace Ewell.Contracts.Ido
     {
         public override Empty Initialize(InitializeInput input)
         {
-            Assert(State.TokenContract.Value == null, "Already initialized.");
+            Assert(!State.Initialized.Value, "Already initialized.");
+            State.GenesisContract.Value = Context.GetZeroSmartContractAddress();
+            Assert(State.GenesisContract.GetContractAuthor.Call(Context.Self) == Context.Sender, "No permission.");
+            Assert(input.WhitelistContractAddress != null && !input.WhitelistContractAddress.Value.IsNullOrEmpty(),
+                "WhitelistContractAddress required.");
+            Assert(input.ProxyAccountContractAddress != null && !input.ProxyAccountContractAddress.Value.IsNullOrEmpty(),
+                "ProxyAccountContractAddress required.");
+            State.WhitelistContract.Value = input.WhitelistContractAddress;
+            State.ProxyAccountContract.Value = input.ProxyAccountContractAddress;
+            State.Admin.Value = input.AdministratorAddress ?? Context.Sender;
             State.TokenContract.Value =
                 Context.GetContractAddressByName(SmartContractConstants.TokenContractSystemName);
-            State.WhitelistContract.Value = input.WhitelistContract;
-            State.Admin.Value = Context.Sender;
-            State.ProxyAccountContract.Value = input.ProxyAccountContractAddress;
+            State.Initialized.Value = true;
             return new Empty();
         }
         
         public override Empty SetProxyAccountContract(Address input)
         {
+            Assert(State.Initialized.Value, "Contract not Initialized.");
             Assert(State.Admin.Value == Context.Sender, "No permission.");
             Assert(input != null && !input.Value.IsNullOrEmpty(), "Invalid param.");
             State.ProxyAccountContract.Value = input;

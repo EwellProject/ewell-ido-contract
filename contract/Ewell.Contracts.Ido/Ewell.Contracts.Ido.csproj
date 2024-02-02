@@ -22,9 +22,6 @@
         <ContractStub Include="..\..\protobuf\acs12.proto">
             <Link>Protobuf\Proto\reference\acs12.proto</Link>
         </ContractStub>
-        <ContractStub Include="..\..\protobuf\acs0.proto">
-            <Link>Protobuf\Proto\reference\acs0.proto</Link>
-        </ContractStub>
         <ContractStub Include="..\..\protobuf\acs1.proto">
             <Link>Protobuf\Proto\reference\acs1.proto</Link>
         </ContractStub>
@@ -34,6 +31,9 @@
         <ContractCode Include="..\..\protobuf\ewell_contract.proto">
             <Link>Protobuf\Proto\ewell_contract.proto</Link>
         </ContractCode>
+        <ContractReference Include="..\..\protobuf\acs0.proto">
+            <Link>Protobuf\Proto\acs0.proto</Link>
+        </ContractReference>
         <ContractReference Include="..\..\protobuf\token_contract.proto">
             <Link>Protobuf\Proto\reference\token_contract.proto</Link>
         </ContractReference>

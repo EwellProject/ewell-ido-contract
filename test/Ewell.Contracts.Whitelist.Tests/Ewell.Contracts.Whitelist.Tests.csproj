@@ -43,9 +43,6 @@
         <ContractStub Include="..\..\protobuf\whitelist_contract.proto">
             <Link>Protobuf\Proto\whitelist_contract.proto</Link>
         </ContractStub>
-        <ContractBase Include="..\..\protobuf\acs0.proto">
-            <Link>Protobuf\Proto\acs0.proto</Link>
-        </ContractBase>
         <ContractBase Include="..\..\protobuf\acs1.proto">
             <Link>Protobuf\Proto\acs1.proto</Link>
         </ContractBase>

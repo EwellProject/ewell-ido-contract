@@ -33,4 +33,9 @@
         <PackageReference Include="AElf.CrossChain" Version="1.2.0" />
         <PackageReference Include="AElf.Types" Version="1.2.0" />
     </ItemGroup>
+    <ItemGroup>
+      <ContractReference Include="..\..\protobuf\acs0.proto">
+        <Link>Protobuf\Proto\acs0.proto</Link>
+      </ContractReference>
+    </ItemGroup>
 </Project>

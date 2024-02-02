@@ -5,6 +5,10 @@ namespace Ewell.Contracts.Ido
 {
     public partial class EwellContractState : ContractState
     {
+        // state definitions go here.
+        public SingletonState<bool> Initialized { get; set; }
+        
+        // Admin Address
         public SingletonState<Address> Admin { get; set; }
 
         public MappedState<Hash, ProjectInfo> ProjectInfoMap { get; set; }

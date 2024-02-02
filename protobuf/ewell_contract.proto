@@ -100,9 +100,10 @@ service EwellContract {
 
 //input
 message InitializeInput{
-    aelf.Address whitelist_contract = 1;
-    aelf.Address proxy_account_contract_address = 2;
-}
+    aelf.Address administrator_address = 1;
+    aelf.Address whitelist_contract_address = 2;
+    aelf.Address proxy_account_contract_address = 3;
+ }
 message RegisterInput {
     string accepted_currency = 1;
     string project_currency = 2;
