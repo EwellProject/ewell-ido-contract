@@ -157,7 +157,7 @@ namespace Ewell.Contracts.Ido
                 LatestPeriod = 0,
                 Symbol = info.ProjectCurrency
             };
-            var totalProjectTokenAmountStr = new BigIntValue(investAmount).Mul(info.PreSalePrice).Div(Mantissa);
+            var totalProjectTokenAmountStr = new BigIntValue(investAmount).Mul(info.PreSalePrice).Div(EwellContractConstants.Mantissa);
             var totalProjectTokenAmount = Parse(totalProjectTokenAmountStr.Value);
             State.ProfitDetailMap[projectId][user].TotalProfit = totalProjectTokenAmount;
             State.ProfitDetailMap[projectId][user].LatestPeriod = 0;
@@ -166,11 +166,11 @@ namespace Ewell.Contracts.Ido
                 BigIntValue periodProfitStr;
                 if (i == 1)
                 { 
-                    periodProfitStr = new BigIntValue(totalProjectTokenAmount).Mul(listInfo.FirstDistributeProportion).Div(ProportionMax);
+                    periodProfitStr = new BigIntValue(totalProjectTokenAmount).Mul(listInfo.FirstDistributeProportion).Div(EwellContractConstants.ProportionMax);
                 }
                 else
                 {
-                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestDistributeProportion).Div(ProportionMax);
+                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestDistributeProportion).Div(EwellContractConstants.ProportionMax);
                 }
 
                 var periodProfit = Parse(periodProfitStr.Value);

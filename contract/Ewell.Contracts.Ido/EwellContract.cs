@@ -46,8 +46,8 @@ namespace Ewell.Contracts.Ido
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
-            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= ProportionMax,"Invalid distributeProportion input");
-            var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(Mantissa).Div(input.PreSalePrice).Value);
+            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContractConstants.ProportionMax,"Invalid distributeProportion input");
+            var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
             Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");
             var id = GetHash(input, Context.Sender);
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
@@ -275,7 +275,7 @@ namespace Ewell.Contracts.Ido
             State.LiquidatedDamageDetailsMap[input] =
                 State.LiquidatedDamageDetailsMap[input] ?? new LiquidatedDamageDetails();
             var liquidatedDamageDetails = State.LiquidatedDamageDetailsMap[input];
-            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(LiquidatedDamageProportion).Div(ProportionMax);
+            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(EwellContractConstants.LiquidatedDamageProportion).Div(EwellContractConstants.ProportionMax);
             var liquidatedDamageAmount = Parse(liquidatedDamageAmountStr.Value);
             var detail = new LiquidatedDamageDetail()
             {
@@ -387,7 +387,7 @@ namespace Ewell.Contracts.Ido
             {
                 TransferOut(input, projectInfo.Creator, projectInfo.AcceptedCurrency, liquidatedDamageDetails.TotalAmount);
             }
-            var profitStr =  new BigIntValue(projectInfo.CurrentRaisedAmount).Mul(projectInfo.PreSalePrice).Div(Mantissa).Value;
+            var profitStr =  new BigIntValue(projectInfo.CurrentRaisedAmount).Mul(projectInfo.PreSalePrice).Div(EwellContractConstants.Mantissa).Value;
             var profit = Parse(profitStr);
             var toBurnAmount = projectInfo.CrowdFundingIssueAmount.Sub(profit);
             if (projectInfo.IsBurnRestToken)
