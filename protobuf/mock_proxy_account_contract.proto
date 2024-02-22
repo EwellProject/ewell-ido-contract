@@ -4,9 +4,9 @@
  *
  * You can use this as a basic template for new contracts.
  * 
- * When building Boilerplate or the contract project located in the "../contract/Forest.MockProxyAccountContract/" 
+ * When building Boilerplate or the contract project located in the "../contract/Ewell.MockProxyAccountContract/" 
  * protoc (the protobuf compiler) will be invoked and this file will produce a .c.cs file and .g.cs file, in the 
- * "../contract/Forest.MockProxyAccountContract/Protobuf/Generated/" folder. 
+ * "../contract/Ewell.MockProxyAccountContract/Protobuf/Generated/" folder. 
  */
 
 // the version of the language, use proto3 for contracts

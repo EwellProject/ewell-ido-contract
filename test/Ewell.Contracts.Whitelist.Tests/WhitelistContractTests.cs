@@ -50,8 +50,8 @@ namespace Ewell.Contracts.Whitelist
             return HashHelper.ComputeFrom($"{whitelistId}{projectId}{tagName}");
         }
 
-        private readonly Hash _projectId = HashHelper.ComputeFrom("NFT Forest");
-        private readonly Hash _projectId2 = HashHelper.ComputeFrom("IDO");
+        private readonly Hash _projectId = HashHelper.ComputeFrom("NFT Ewell");
+        private readonly Hash _projectId2 = HashHelper.ComputeFrom("Ewell");
 
         [Fact]
         public async Task InitializeTest()

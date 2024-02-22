@@ -14,5 +14,5 @@ public class WhitelistContractInitializationProvider : IContractInitializationPr
     }
 
     public Hash SystemSmartContractName => WhitelistSmartContractAddressNameProvider.Name;
-    public string ContractCodeName => "Forest.Whitelist";
+    public string ContractCodeName => "Ewell.Whitelist";
 }
