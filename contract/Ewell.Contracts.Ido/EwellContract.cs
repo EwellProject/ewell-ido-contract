@@ -46,6 +46,7 @@ namespace Ewell.Contracts.Ido
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
+            Assert(input.TotalPeriod <= EwellContractConstants.MaxPeriod, "Invalid totalPeriod input");
             Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContractConstants.MaxProportion,"Invalid distributeProportion input");
             var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
             Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");

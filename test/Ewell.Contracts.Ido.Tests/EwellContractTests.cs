@@ -64,7 +64,7 @@ namespace Ewell.Contracts.Ido
             //approve first
             await TokenContractStub.Approve.SendAsync(new ApproveInput()
            {
-               Amount = 1_00000000,
+               Amount = 1000_00000000,
                Symbol = TestSymbol,
                Spender = EwellContractAddress
            });
@@ -74,8 +74,8 @@ namespace Ewell.Contracts.Ido
                 AcceptedCurrency = "ELF",
                 ProjectCurrency =  TestSymbol,
                 CrowdFundingType = "price sale",
-                CrowdFundingIssueAmount = 1_00000000,
-                PreSalePrice = 1_00000000,
+                CrowdFundingIssueAmount = 1000_00000000,
+                PreSalePrice = 50000000,
                 StartTime = blockTimeProvider.GetBlockTime().AddSeconds(3),
                 EndTime = blockTimeProvider.GetBlockTime().AddSeconds(30),
                 MinSubscription = 10,
@@ -111,8 +111,8 @@ namespace Ewell.Contracts.Ido
             var senderBalanceAfter = await GetBalanceAsync(TestSymbol, AdminAddress);
             var virtualAddressBalanceAfter = await GetBalanceAsync(TestSymbol, virtualAddress);
 
-            senderBalanceAfter.ShouldBe(99999900000000);
-            virtualAddressBalanceAfter.ShouldBe(100000000);
+            senderBalanceAfter.ShouldBe(999000_00000000);
+            virtualAddressBalanceAfter.ShouldBe(1000_00000000);
             
             var projectId = ProjectRegistered.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
@@ -180,7 +180,7 @@ namespace Ewell.Contracts.Ido
             await TomTokenContractStub.Approve.SendAsync(new ApproveInput()
             {
                 Spender = EwellContractAddress,
-                Amount = 10000,
+                Amount = 1000,
                 Symbol = "ELF"
             });
             //var balance1 = await GetBalanceAsync("ELF", UserTomAddress);
