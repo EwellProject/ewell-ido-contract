@@ -166,11 +166,11 @@ namespace Ewell.Contracts.Ido
                 BigIntValue periodProfitStr;
                 if (i == 1)
                 { 
-                    periodProfitStr = new BigIntValue(totalProjectTokenAmount).Mul(listInfo.FirstDistributeProportion).Div(EwellContractConstants.ProportionMax);
+                    periodProfitStr = new BigIntValue(totalProjectTokenAmount).Mul(listInfo.FirstDistributeProportion).Div(EwellContractConstants.MaxProportion);
                 }
                 else
                 {
-                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestDistributeProportion).Div(EwellContractConstants.ProportionMax);
+                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestDistributeProportion).Div(EwellContractConstants.MaxProportion);
                 }
 
                 var periodProfit = Parse(periodProfitStr.Value);

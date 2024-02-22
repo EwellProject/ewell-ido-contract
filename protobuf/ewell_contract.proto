@@ -63,7 +63,7 @@ service EwellContract {
     rpc GetAdmin(google.protobuf.Empty)  returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
-    rpc GetTokenAddress(google.protobuf.Empty)  returns (aelf.Address) {
+    rpc GetTokenContractAddress(google.protobuf.Empty)  returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
     rpc GetProjectInfo(aelf.Hash) returns (ProjectInfo) {

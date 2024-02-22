@@ -46,7 +46,7 @@ namespace Ewell.Contracts.Ido
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
-            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContractConstants.ProportionMax,"Invalid distributeProportion input");
+            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContractConstants.MaxProportion,"Invalid distributeProportion input");
             var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
             Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");
             var id = GetHash(input, Context.Sender);
@@ -275,7 +275,7 @@ namespace Ewell.Contracts.Ido
             State.LiquidatedDamageDetailsMap[input] =
                 State.LiquidatedDamageDetailsMap[input] ?? new LiquidatedDamageDetails();
             var liquidatedDamageDetails = State.LiquidatedDamageDetailsMap[input];
-            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(EwellContractConstants.LiquidatedDamageProportion).Div(EwellContractConstants.ProportionMax);
+            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(EwellContractConstants.LiquidatedDamageProportion).Div(EwellContractConstants.MaxProportion);
             var liquidatedDamageAmount = Parse(liquidatedDamageAmountStr.Value);
             var detail = new LiquidatedDamageDetail()
             {
@@ -506,54 +506,47 @@ namespace Ewell.Contracts.Ido
         {
             //check status
             var projectInfo = ValidProjectExist(input);
-            Assert(!projectInfo.Enabled,"Project should be disabled");
+            Assert(!projectInfo.Enabled, "Project should be disabled");
 
             var details = State.LiquidatedDamageDetailsMap[input].Details.Where(x => x.User == Context.Sender);
             foreach (var detail in details)
             {
-                Assert(!detail.Claimed,"Already claimed");
-                if (detail.Amount > 0)
-                {
-                    TransferOut(input, detail.User, detail.Symbol, detail.Amount);
-                }
-                
-                detail.Claimed = true;
-                Context.Fire(new LiquidatedDamageClaimed()
-                {
-                    ProjectId = input,
-                    Amount = detail.Amount,
-                    InvestSymbol = detail.Symbol,
-                    User = detail.User
-                });
-            }
-         
-            return new Empty();
-        }
-        public override Empty ClaimLiquidatedDamageAll(Hash input)
-        {
-            var projectInfo = ValidProjectExist(input);
-            Assert(!projectInfo.Enabled,"Project should be disabled");
-            AdminCheck();
-            var details = State.LiquidatedDamageDetailsMap[input].Details;
-            foreach (var detail in details)
-            {
-                Assert(!detail.Claimed,"Already claimed");
-                if (detail.Amount > 0)
-                {
-                    TransferOut(input, detail.User, detail.Symbol, detail.Amount);
-                }
-                
-                detail.Claimed = true;
-                Context.Fire(new LiquidatedDamageClaimed()
-                {
-                    ProjectId = input,
-                    Amount = detail.Amount,
-                    InvestSymbol = detail.Symbol,
-                    User = detail.User
-                });
+                DoClaimLiquidatedDamage(input, detail);
             }
 
             return new Empty();
         }
+
+        public override Empty ClaimLiquidatedDamageAll(Hash input)
+        {
+            var projectInfo = ValidProjectExist(input);
+            Assert(!projectInfo.Enabled, "Project should be disabled");
+            AdminCheck();
+            var details = State.LiquidatedDamageDetailsMap[input].Details;
+            foreach (var detail in details)
+            {
+                DoClaimLiquidatedDamage(input, detail);
+            }
+
+            return new Empty();
+        }
+        
+        private void DoClaimLiquidatedDamage(Hash projectId, LiquidatedDamageDetail detail)
+        {
+            Assert(!detail.Claimed,"Already claimed");
+            if (detail.Amount > 0)
+            {
+                TransferOut(projectId, detail.User, detail.Symbol, detail.Amount);
+            }
+                
+            detail.Claimed = true;
+            Context.Fire(new LiquidatedDamageClaimed()
+            {
+                ProjectId = projectId,
+                Amount = detail.Amount,
+                InvestSymbol = detail.Symbol,
+                User = detail.User
+            });
+        } 
     }
 }

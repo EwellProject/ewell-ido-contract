@@ -15,7 +15,7 @@ namespace Ewell.Contracts.Ido
             return State.ProxyAccountContract.Value;
         }
         
-        public override Address GetTokenAddress(Empty input)
+        public override Address GetTokenContractAddress(Empty input)
         {
             return State.TokenContract.Value;
         }
