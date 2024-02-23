@@ -426,7 +426,64 @@ namespace Ewell.Contracts.Ido
             });
             balanceAfter.Balance.Sub(balanceBefore.Balance).ShouldBePositive();
         }
-
+        
+        [Fact]
+        public async Task UpdateAdditionalInfo_Test()
+        {
+            await AddWhitelistsTest();
+            
+            await AdminStub.UpdateAdditionalInfo.SendAsync(new UpdateAdditionalInfoInput()
+            {
+                ProjectId = projectId0,
+                AdditionalInfo = new AdditionalInfo
+                {
+                    Data =
+                    {
+                        ["test1"] = "Additional test1",
+                        ["test2"] = "Additional test2",
+                    }
+                } 
+            });
+            
+            //check
+            var projectInfoAfter = await AdminStub.GetProjectInfo.CallAsync(projectId0);
+            projectInfoAfter.ShouldNotBeNull();
+            projectInfoAfter.AdditionalInfo.Data.ShouldNotBeNull();
+            projectInfoAfter.AdditionalInfo.Data.ShouldContainKey("test1");
+        }
+        
+        [Fact]
+        public async Task GetTokenContractAddress_Test()
+        {
+            await InitializeTest();
+            
+            //check
+            var tokenContractAddress = await AdminStub.GetTokenContractAddress.CallAsync(new Empty());
+            tokenContractAddress.ShouldNotBeNull();
+            tokenContractAddress.ShouldBe(TokenContractAddress);
+        }
+        
+        [Fact]
+        public async Task GetProjectListInfo_Test()
+        {
+            await RegisterTest();
+            
+            //check
+            var projectListInfo = await TomStub.GetProjectListInfo.CallAsync(projectId0);
+            projectListInfo.ShouldNotBeNull();
+        }
+        
+        [Fact]
+        public async Task GetAdmin_Test()
+        {
+            await InitializeTest();
+            
+            //check
+            var adminAddress = await AdminStub.GetAdmin.CallAsync(new Empty());
+            adminAddress.ShouldNotBeNull();
+            adminAddress.ShouldBe(AdminAddress);
+        }
+        
         [Fact]
         public async Task GetPendingProjectAddressTest()
         {

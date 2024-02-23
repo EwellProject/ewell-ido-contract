@@ -39,18 +39,7 @@ namespace Ewell.Contracts.Ido
                 Address = owner
             }), $"Token {token}'s issuer does not match with address {owner}.");
         }
-
-        private void ValidTokenBalance(string token, Address virtualAddress, long expectBalance)
-        {
-
-            var balanceOutput = State.TokenContract.GetBalance.Call(new GetBalanceInput()
-            {
-                Owner = virtualAddress,
-                Symbol = token
-            });
-            Assert(balanceOutput.Balance >= expectBalance ,$"Insufficient {token} balance, expect balance is {expectBalance}");
-        }
-
+        
         private static Hash GetHash(RegisterInput registerInput, Address registerAddress)
         {
             var hash = HashHelper.ConcatAndCompute(HashHelper.ComputeFrom(registerInput),
@@ -115,20 +104,6 @@ namespace Ewell.Contracts.Ido
                 });
         }
         
-        private long GetAvailableInvestAmount(Hash projectId, Address user)
-        {
-
-           var investDetail =  State.InvestDetailMap[projectId][user];
-           if (investDetail == null)
-           {
-               return 0;
-           }
-
-           var availableInvestAmount = State.ProjectInfoMap[projectId].MaxSubscription.Sub(investDetail.Amount);
-           return availableInvestAmount;
-
-        }
-
         private void CheckInvestInput(Hash projectId, Address user, long investAmount)
         {
             var projectInfo = State.ProjectInfoMap[projectId];
