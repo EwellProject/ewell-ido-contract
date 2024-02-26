@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AElf;
-using AElf.Contracts.Whitelist.Extensions;
 using AElf.Sdk.CSharp;
 using AElf.Types;
 
@@ -188,7 +187,7 @@ public partial class WhitelistContract
             throw new AssertionException("TagInfo is null.");
         }
 
-        var id = whitelistId.CalculateExtraInfoId(projectId, info.TagName);
+        var id = CalculateExtraInfoId(whitelistId, projectId, info.TagName);
         if (State.TagInfoMap[id] != null)
         {
             throw new AssertionException($"TagInfo already exist.{info}");
@@ -291,5 +290,10 @@ public partial class WhitelistContract
             subscribeIdList.Value.Remove(subscribeId);
             State.ManagerSubscribeIdListMap[manager.Address] = subscribeIdList;
         }
+    }
+    
+    private Hash CalculateExtraInfoId(Hash whitelistId, Hash projectId, string tagName)
+    {
+        return HashHelper.ComputeFrom($"{whitelistId}{projectId}{tagName}");
     }
 }

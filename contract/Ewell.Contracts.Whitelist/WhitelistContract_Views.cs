@@ -1,5 +1,4 @@
 using System.Linq;
-using AElf.Contracts.Whitelist.Extensions;
 using AElf.Sdk.CSharp;
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
@@ -163,7 +162,7 @@ public partial class WhitelistContract
     {
         var whitelist = GetWhitelist(input.WhitelistId);
         MakeSureProjectCorrect(whitelist.WhitelistId, input.ProjectId);
-        var tagId = whitelist.WhitelistId.CalculateExtraInfoId(whitelist.ProjectId, input.TagInfo.TagName);
+        var tagId = CalculateExtraInfoId(whitelist.WhitelistId, whitelist.ProjectId, input.TagInfo.TagName);
         var tagIdList = State.ManagerTagInfoMap[whitelist.ProjectId][whitelist.WhitelistId] ?? new HashList();
         var ifExist = tagIdList.Value.Contains(tagId);
         return new BoolValue { Value = ifExist };

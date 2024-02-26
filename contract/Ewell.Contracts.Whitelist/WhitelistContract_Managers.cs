@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using AElf.Contracts.Whitelist.Extensions;
 using AElf.Sdk.CSharp;
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
@@ -152,7 +151,7 @@ public partial class WhitelistContract
         AssertWhitelistIsAvailable(input.WhitelistId);
         var whitelistInfo = AssertWhitelistManager(input.WhitelistId);
 
-        var tagInfoId = whitelistInfo.WhitelistId.CalculateExtraInfoId(whitelistInfo.ProjectId, input.TagInfo.TagName);
+        var tagInfoId = CalculateExtraInfoId(whitelistInfo.WhitelistId, whitelistInfo.ProjectId, input.TagInfo.TagName);
         Assert(State.TagInfoMap[tagInfoId] == null, $"The tag Info {input.TagInfo.TagName} already exists.");
         State.TagInfoMap[tagInfoId] = new TagInfo()
         {

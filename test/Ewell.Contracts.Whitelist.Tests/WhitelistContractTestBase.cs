@@ -1,6 +1,5 @@
 using AElf.Boilerplate.TestBase;
 using AElf.Boilerplate.TestBase.SmartContractNameProviders;
-using AElf.Contracts.Whitelist;
 using AElf.Cryptography.ECDSA;
 using AElf.Types;
 
