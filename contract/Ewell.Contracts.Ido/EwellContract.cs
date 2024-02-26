@@ -298,7 +298,7 @@ namespace Ewell.Contracts.Ido
             
             ProfitDetailUpdate(input, Context.Sender, 0);
             
-            Context.Fire(new Disinvested()
+            Context.Fire(new DisInvested()
             {
                 ProjectId = input,
                 User = Context.Sender,

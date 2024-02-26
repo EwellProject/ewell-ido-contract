@@ -332,7 +332,7 @@ message Invested{
     int64 to_claim_amount = 7;
 }
 
-message Disinvested{
+message DisInvested{
     option (aelf.is_event) = true;
     aelf.Hash project_id = 1;
     aelf.Address user = 2; 
