@@ -47,7 +47,7 @@ public static class Extensions
     }
 
     public static ProjectRegistered GenerateProjectRegisteredEvent(RegisterInput input, Hash projectId, 
-        Address creator, Address virtualAddress, long toRaisedAmount)
+        Address creator, Address virtualAddress, long targetRaisedAmount)
     {
         return new ProjectRegistered()
         {
@@ -70,7 +70,7 @@ public static class Extensions
             IsBurnRestToken = input.IsBurnRestToken,
             TotalPeriod = input.TotalPeriod,
             AdditionalInfo = input.AdditionalInfo,
-            ToRaisedAmount = toRaisedAmount,
+            TargetRaisedAmount = targetRaisedAmount,
             Creator = creator,
             FirstDistributeProportion = input.FirstDistributeProportion,
             RestPeriodDistributeProportion = input.RestPeriodDistributeProportion,

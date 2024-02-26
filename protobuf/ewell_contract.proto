@@ -293,7 +293,7 @@ message ProjectRegistered{
     bool is_burn_rest_token = 17;
     int32 total_period = 18;
     AdditionalInfo additional_info = 19;
-    int64 to_raised_amount = 20;
+    int64 target_raised_amount = 20;
     aelf.Address creator = 21; 
     int32 first_distribute_proportion = 22;
     int32 rest_period_distribute_proportion = 23;
