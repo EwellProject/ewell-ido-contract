@@ -145,7 +145,7 @@ namespace Ewell.Contracts.Ido
                 }
                 else
                 {
-                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestDistributeProportion).Div(EwellContractConstants.MaxProportion);
+                    periodProfitStr =  new BigIntValue(totalProjectTokenAmount).Mul(listInfo.RestPeriodDistributeProportion).Div(EwellContractConstants.MaxProportion);
                 }
 
                 var periodProfit = Parse(periodProfitStr.Value);
@@ -159,9 +159,9 @@ namespace Ewell.Contracts.Ido
         {
             var userinfo = State.InvestDetailMap[projectId][user];
             Assert(userinfo != null,"No invest record");
-            Assert(! userinfo.IsUnInvest  ,"User has already unInvest");
+            Assert(! userinfo.IsDisinvest  ,"User has already unInvest");
             Assert(userinfo.Amount > 0,"Insufficient invest amount");
-            State.InvestDetailMap[projectId][user].IsUnInvest = true;
+            State.InvestDetailMap[projectId][user].IsDisinvest = true;
             var unInvestAmount = userinfo.Amount;
             TransferOut(projectId, user, userinfo.InvestSymbol, unInvestAmount);
             State.InvestDetailMap[projectId][user].Amount = 0;

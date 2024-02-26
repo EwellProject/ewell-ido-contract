@@ -43,7 +43,7 @@ service EwellContract {
     rpc Invest (InvestInput) returns (google.protobuf.Empty) {
     }
     //User disinvest
-    rpc UnInvest (aelf.Hash) returns (google.protobuf.Empty) {
+    rpc Disinvest (aelf.Hash) returns (google.protobuf.Empty) {
     }
     //Project cancelled, funds returned to investor
     rpc ReFund(aelf.Hash) returns(google.protobuf.Empty) {
@@ -131,7 +131,7 @@ message RegisterInput {
     int32 total_period = 17;
     AdditionalInfo additional_info = 18;
     int32 first_distribute_proportion = 19;
-    int32 rest_distribute_proportion = 20;
+    int32 rest_period_distribute_proportion = 20;
     int64 period_duration = 21;
     google.protobuf.Timestamp token_release_time = 22;
     string whitelist_url = 23;
@@ -206,7 +206,7 @@ message ProjectInfo{
     bool is_burn_rest_token = 12;
     AdditionalInfo additional_info = 13;
     aelf.Address creator = 14;
-    int64 to_raised_amount = 15;
+    int64 target_raised_amount = 15;
     int64 current_raised_amount = 16;
     bool enabled = 17; 
     aelf.Hash virtual_address_hash = 18;
@@ -221,7 +221,7 @@ message ProjectListInfo{
     int32 latest_period = 6;
     int32 total_period = 7;
     int32 first_distribute_proportion = 8;
-    int32 rest_distribute_proportion = 9;
+    int32 rest_period_distribute_proportion = 9;
     int64 period_duration = 10;
     bool is_listed = 11;
     bool is_withdraw = 12;
@@ -229,7 +229,7 @@ message ProjectListInfo{
 message InvestDetail{
     string invest_symbol = 1;
     int64 amount = 2;
-    bool is_unInvest = 3;
+    bool is_disinvest = 3;
 }
 
 message ProfitDetail{
@@ -296,7 +296,7 @@ message ProjectRegistered{
     int64 to_raised_amount = 20;
     aelf.Address creator = 21; 
     int32 first_distribute_proportion = 22;
-    int32 rest_distribute_proportion = 23;
+    int32 rest_period_distribute_proportion = 23;
     int64 period_duration = 24;
     aelf.Address virtual_address = 25;
     google.protobuf.Timestamp token_release_time = 26;
@@ -332,12 +332,12 @@ message Invested{
     int64 to_claim_amount = 7;
 }
 
-message UnInvested{
+message Disinvested{
     option (aelf.is_event) = true;
     aelf.Hash project_id = 1;
     aelf.Address user = 2; 
     string invest_symbol = 3;
-    int64 un_invest_amount = 4;
+    int64 disinvest_amount = 4;
     int64 total_amount = 5;
 }
 

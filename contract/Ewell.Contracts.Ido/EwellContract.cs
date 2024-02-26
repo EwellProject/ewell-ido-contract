@@ -47,9 +47,9 @@ namespace Ewell.Contracts.Ido
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
             Assert(input.UnlockTime >= input.EndTime, "Invalid unlockTime input");
             Assert(input.TotalPeriod <= EwellContractConstants.MaxPeriod, "Invalid totalPeriod input");
-            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestDistributeProportion)) <= EwellContractConstants.MaxProportion,"Invalid distributeProportion input");
-            var toRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
-            Assert(toRaisedAmount > 0, "Invalid raise amount calculated from input");
+            Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestPeriodDistributeProportion)) <= EwellContractConstants.MaxProportion,"Invalid distributeProportion input");
+            var targetRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
+            Assert(targetRaisedAmount > 0, "Invalid raise amount calculated from input");
             var id = GetHash(input, Context.Sender);
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
@@ -58,7 +58,7 @@ namespace Ewell.Contracts.Ido
             
             TransferIn(id, Context.Sender, input.ProjectSymbol, input.CrowdFundingIssueAmount);
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
-            var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, toRaisedAmount, virtualAddressHash);
+            var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, targetRaisedAmount, virtualAddressHash);
             State.ProjectInfoMap[id] = projectInfo;
             var listInfo = Extensions.CreateProjectListInfo(input, id);
             State.ProjectListInfoMap[id] = listInfo;
@@ -92,7 +92,7 @@ namespace Ewell.Contracts.Ido
             }
 
             Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, id, Context.Sender, 
-                virtualAddress, toRaisedAmount));
+                virtualAddress, targetRaisedAmount));
             return new Empty();
         }
 
@@ -240,12 +240,12 @@ namespace Ewell.Contracts.Ido
              
             var totalInvestAmount = investDetail.Amount.Add(input.InvestAmount);
             investDetail.Amount = totalInvestAmount;
-            investDetail.IsUnInvest = false;
+            investDetail.IsDisinvest = false;
             State.InvestDetailMap[projectInfo.ProjectId][Context.Sender] = investDetail;
             State.ProjectInfoMap[input.ProjectId].CurrentRaisedAmount = State.ProjectInfoMap[input.ProjectId]
                 .CurrentRaisedAmount.Add(input.InvestAmount);
             
-            Assert(State.ProjectInfoMap[input.ProjectId].CurrentRaisedAmount <= projectInfo.ToRaisedAmount,"The investment quota is already full");
+            Assert(State.ProjectInfoMap[input.ProjectId].CurrentRaisedAmount <= projectInfo.TargetRaisedAmount,"The investment quota is already full");
             var toClaimAmount = ProfitDetailUpdate(input.ProjectId, Context.Sender, totalInvestAmount);
             
             Context.Fire(new Invested()
@@ -261,16 +261,16 @@ namespace Ewell.Contracts.Ido
             return new Empty();
         }
 
-        public override Empty UnInvest(Hash input)
+        public override Empty Disinvest(Hash input)
         {
             var projectInfo = ValidProjectExist(input);
             Assert(projectInfo.Enabled,"Project is not enabled");
             var currentTimestamp = Context.CurrentBlockTime;
-            Assert(currentTimestamp >= projectInfo.StartTime && currentTimestamp <= projectInfo.EndTime,"Can't unInvest right now");
-            //unInvest 
+            Assert(currentTimestamp >= projectInfo.StartTime && currentTimestamp <= projectInfo.EndTime,"Can't disinvest right now");
+            //disinvest 
             var userinfo = State.InvestDetailMap[input][Context.Sender];
             Assert(userinfo != null,"No invest record");
-            Assert(!userinfo.IsUnInvest,"User has already unInvest");
+            Assert(!userinfo.IsDisinvest,"User has already disinvest");
             var userAmount = userinfo.Amount;
             Assert(userAmount > 0,"Insufficient invest amount");
             State.LiquidatedDamageDetailsMap[input] =
@@ -285,11 +285,11 @@ namespace Ewell.Contracts.Ido
                 User = Context.Sender
             };
 
-            State.InvestDetailMap[input][Context.Sender].IsUnInvest = true;
-            var unInvestAmount = userAmount.Sub(liquidatedDamageAmount);
-            if (unInvestAmount > 0)
+            State.InvestDetailMap[input][Context.Sender].IsDisinvest = true;
+            var disinvestAmount = userAmount.Sub(liquidatedDamageAmount);
+            if (disinvestAmount > 0)
             {
-                TransferOut(input, Context.Sender,userinfo.InvestSymbol, unInvestAmount);
+                TransferOut(input, Context.Sender,userinfo.InvestSymbol, disinvestAmount);
             }
             
             State.InvestDetailMap[input][Context.Sender].Amount = 0;
@@ -298,13 +298,13 @@ namespace Ewell.Contracts.Ido
             
             ProfitDetailUpdate(input, Context.Sender, 0);
             
-            Context.Fire(new UnInvested()
+            Context.Fire(new Disinvested()
             {
                 ProjectId = input,
                 User = Context.Sender,
                 InvestSymbol = userinfo.InvestSymbol,
                 TotalAmount = userAmount,
-                UnInvestAmount = unInvestAmount
+                DisinvestAmount = disinvestAmount
             });
             
             liquidatedDamageDetails.Details.Add(detail);
@@ -485,7 +485,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input);
             Assert(!projectInfo.Enabled ,"Project should be disabled");
-            //unInvest 
             ReFundInternal(input, Context.Sender);
             return new Empty();
         }

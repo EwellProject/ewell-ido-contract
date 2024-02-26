@@ -99,7 +99,7 @@ namespace Ewell.Contracts.Ido
                 UnlockTime = Timestamp.FromDateTime(DateTime.UtcNow.Add(new TimeSpan(0, 0, 30000))),
                 TotalPeriod = 1,
                 FirstDistributeProportion = 100_000000,
-                RestDistributeProportion = 0,
+                RestPeriodDistributeProportion = 0,
                 PeriodDuration = 0,
                 TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30),
                 WhitelistUrl = WhitelistUrl
@@ -257,7 +257,7 @@ namespace Ewell.Contracts.Ido
         [Fact]
         public async Task ClaimLiquidatedDamageTest()
         {
-            await UnInvestTest();
+            await DisinvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
 
             var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
@@ -278,7 +278,7 @@ namespace Ewell.Contracts.Ido
         }
 
         [Fact]
-        public async Task UnInvestTest()
+        public async Task DisinvestTest()
         {
             await InvestTest();
             var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
@@ -287,7 +287,7 @@ namespace Ewell.Contracts.Ido
                 Symbol = "ELF"
             });
 
-            await TomStub.UnInvest.SendAsync(projectId0);
+            await TomStub.Disinvest.SendAsync(projectId0);
 
             var balanceAfter = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
             {
@@ -303,9 +303,9 @@ namespace Ewell.Contracts.Ido
             });
             profit.TotalProfit.ShouldBe(0);
 
-            //User has already unInvest
-            var alreadyUnInvestException = await TomStub.UnInvest.SendWithExceptionAsync(projectId0);
-            alreadyUnInvestException.TransactionResult.Error.ShouldContain("User has already unInvest");
+            //User has already Disinvest
+            var alreadyDisinvestException = await TomStub.Disinvest.SendWithExceptionAsync(projectId0);
+            alreadyDisinvestException.TransactionResult.Error.ShouldContain("User has already disinvest");
         }
 
 
@@ -386,7 +386,7 @@ namespace Ewell.Contracts.Ido
         [Fact]
         public async Task ClaimLiquidatedDamageAllTest()
         {
-            await UnInvestTest();
+            await DisinvestTest();
             await AdminStub.Cancel.SendAsync(projectId0);
 
             var balanceBefore = await TokenContractStub.GetBalance.CallAsync(new GetBalanceInput()
@@ -527,7 +527,7 @@ namespace Ewell.Contracts.Ido
                 UnlockTime = Timestamp.FromDateTime(DateTime.UtcNow.Add(new TimeSpan(0, 0, 30000))),
                 TotalPeriod = 1,
                 FirstDistributeProportion = 100_000000,
-                RestDistributeProportion = 0,
+                RestPeriodDistributeProportion = 0,
                 PeriodDuration = 0,
                 TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30)
             };

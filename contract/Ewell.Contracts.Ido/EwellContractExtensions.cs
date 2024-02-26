@@ -5,7 +5,7 @@ namespace Ewell.Contracts.Ido;
 public static class Extensions
 {
     public static ProjectInfo CreateProjectInfo(RegisterInput input, Hash projectId, Address creator,
-        long toRaisedAmount, Hash virtualAddressHash)
+        long targetRaisedAmount, Hash virtualAddressHash)
     {
         return new ProjectInfo
         {
@@ -22,7 +22,7 @@ public static class Extensions
             IsBurnRestToken = input.IsBurnRestToken,
             AdditionalInfo = input.AdditionalInfo,
             Creator = creator,
-            ToRaisedAmount = toRaisedAmount,
+            TargetRaisedAmount = targetRaisedAmount,
             Enabled = true,
             VirtualAddressHash = virtualAddressHash,
             TokenReleaseTime = input.TokenReleaseTime
@@ -41,7 +41,7 @@ public static class Extensions
             LatestPeriod = 0,
             TotalPeriod = input.TotalPeriod,
             FirstDistributeProportion = input.FirstDistributeProportion,
-            RestDistributeProportion = input.RestDistributeProportion,
+            RestPeriodDistributeProportion = input.RestPeriodDistributeProportion,
             PeriodDuration = input.PeriodDuration
         };
     }
@@ -73,7 +73,7 @@ public static class Extensions
             ToRaisedAmount = toRaisedAmount,
             Creator = creator,
             FirstDistributeProportion = input.FirstDistributeProportion,
-            RestDistributeProportion = input.RestDistributeProportion,
+            RestPeriodDistributeProportion = input.RestPeriodDistributeProportion,
             PeriodDuration = input.PeriodDuration,
             TokenReleaseTime = input.TokenReleaseTime,
             VirtualAddress = virtualAddress
