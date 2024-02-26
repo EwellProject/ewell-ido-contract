@@ -40,8 +40,8 @@ namespace Ewell.Contracts.Ido
 
         public override Empty Register(RegisterInput input)
         {
-            ValidTokenSymbolOwner(input.ProjectCurrency, Context.Sender);
-            ValidTokenSymbol(input.AcceptedCurrency);
+            ValidTokenSymbolOwner(input.ProjectSymbol, Context.Sender);
+            ValidTokenSymbol(input.AcceptedSymbol);
             Assert(input.MaxSubscription >= input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
@@ -56,7 +56,7 @@ namespace Ewell.Contracts.Ido
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(virtualAddressHash);
             State.ProjectAddressMap[id] = virtualAddress;
             
-            TransferIn(id, Context.Sender, input.ProjectCurrency, input.CrowdFundingIssueAmount);
+            TransferIn(id, Context.Sender, input.ProjectSymbol, input.CrowdFundingIssueAmount);
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
             var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, toRaisedAmount, virtualAddressHash);
             State.ProjectInfoMap[id] = projectInfo;
@@ -162,7 +162,7 @@ namespace Ewell.Contracts.Ido
             });
             return new Empty();
         }
-
+        
         public override Empty Cancel(Hash input)
         {
             var projectInfo = ValidProjectExist(input);
@@ -181,13 +181,13 @@ namespace Ewell.Contracts.Ido
             {
                 State.TokenContract.Burn.VirtualSend(projectInfo.VirtualAddressHash, new BurnInput()
                 {
-                    Symbol = projectInfo.ProjectCurrency,
+                    Symbol = projectInfo.ProjectSymbol,
                     Amount = toBurnAmount
                 });
             }
             else
             {
-                TransferOut(input, projectInfo.Creator, projectInfo.ProjectCurrency, toBurnAmount);
+                TransferOut(input, projectInfo.Creator, projectInfo.ProjectSymbol, toBurnAmount);
             }
 
             return new Empty();
@@ -225,16 +225,16 @@ namespace Ewell.Contracts.Ido
             {
                 WhitelistCheck(input.ProjectId, Context.Sender);
             }
-            Assert(projectInfo.AcceptedCurrency == input.Currency,"The currency is invalid");
+            Assert(projectInfo.AcceptedSymbol == input.Symbol,"The Symbol is invalid");
             CheckInvestInput(input.ProjectId, Context.Sender, input.InvestAmount);
             var currentTimestamp = Context.CurrentBlockTime;
             Assert(currentTimestamp >= projectInfo.StartTime && currentTimestamp <= projectInfo.EndTime,"Can't invest right now");
             //invest 
           
-            TransferIn(input.ProjectId, Context.Sender, input.Currency, input.InvestAmount);
+            TransferIn(input.ProjectId, Context.Sender, input.Symbol, input.InvestAmount);
             var investDetail =  State.InvestDetailMap[projectInfo.ProjectId][Context.Sender] ?? new InvestDetail()
             {
-                InvestSymbol = input.Currency,
+                InvestSymbol = input.Symbol,
                 Amount = 0
             };
              
@@ -251,10 +251,10 @@ namespace Ewell.Contracts.Ido
             Context.Fire(new Invested()
             {
                 ProjectId = input.ProjectId,
-                InvestSymbol = input.Currency,
+                InvestSymbol = input.Symbol,
                 Amount = input.InvestAmount,
                 TotalAmount = totalInvestAmount,
-                ProjectCurrency = projectInfo.ProjectCurrency,
+                ProjectSymbol = projectInfo.ProjectSymbol,
                 ToClaimAmount = toClaimAmount,
                 User = Context.Sender
             });
@@ -379,14 +379,14 @@ namespace Ewell.Contracts.Ido
             var withdrawAmount = projectInfo.CurrentRaisedAmount;
             if (withdrawAmount > 0)
             {
-                TransferOut(input, projectInfo.Creator, projectInfo.AcceptedCurrency, withdrawAmount);
+                TransferOut(input, projectInfo.Creator, projectInfo.AcceptedSymbol, withdrawAmount);
             }
            
             State.ProjectListInfoMap[input].IsWithdraw = true;
             var liquidatedDamageDetails = State.LiquidatedDamageDetailsMap[input];
             if (liquidatedDamageDetails != null && liquidatedDamageDetails.TotalAmount > 0)
             {
-                TransferOut(input, projectInfo.Creator, projectInfo.AcceptedCurrency, liquidatedDamageDetails.TotalAmount);
+                TransferOut(input, projectInfo.Creator, projectInfo.AcceptedSymbol, liquidatedDamageDetails.TotalAmount);
             }
             var profitStr =  new BigIntValue(projectInfo.CurrentRaisedAmount).Mul(projectInfo.PreSalePrice).Div(EwellContractConstants.Mantissa).Value;
             var profit = Parse(profitStr);
@@ -396,21 +396,21 @@ namespace Ewell.Contracts.Ido
               
                 State.TokenContract.Burn.VirtualSend(projectInfo.VirtualAddressHash, new BurnInput()
                 {
-                    Symbol = projectInfo.ProjectCurrency,
+                    Symbol = projectInfo.ProjectSymbol,
                     Amount = toBurnAmount
                 });
             }
             else
             {
-                TransferOut(input, projectInfo.Creator, projectInfo.ProjectCurrency, toBurnAmount);
+                TransferOut(input, projectInfo.Creator, projectInfo.ProjectSymbol, toBurnAmount);
             }
             
             Context.Fire(new Withdrawn()
             {
                 ProjectId = input,
-                AcceptedSymbol = projectInfo.AcceptedCurrency,
+                AcceptedSymbol = projectInfo.AcceptedSymbol,
                 WithdrawAmount = withdrawAmount,
-                ProjectCurrency = projectInfo.ProjectCurrency,
+                ProjectSymbol = projectInfo.ProjectSymbol,
                 IsBurnRestToken = projectInfo.IsBurnRestToken,
                 BurnAmount = toBurnAmount
             });
@@ -453,7 +453,7 @@ namespace Ewell.Contracts.Ido
                     ProjectId = input.ProjectId,
                     LatestPeriod = currentPeriod,
                     Amount = profitPeriodAmount,
-                    ProjectCurrency = profitDetailInfo.Symbol,
+                    ProjectSymbol = profitDetailInfo.Symbol,
                     TotalPeriod = listInfo.LatestPeriod,
                     User = input.User
                 });
@@ -480,7 +480,7 @@ namespace Ewell.Contracts.Ido
             });
             return new Empty();
         }
-
+        
         public override Empty ReFund(Hash input)
         {
             var projectInfo = ValidProjectExist(input);
@@ -517,7 +517,7 @@ namespace Ewell.Contracts.Ido
 
             return new Empty();
         }
-
+        
         public override Empty ClaimLiquidatedDamageAll(Hash input)
         {
             var projectInfo = ValidProjectExist(input);

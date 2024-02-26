@@ -10,8 +10,8 @@ public static class Extensions
         return new ProjectInfo
         {
             ProjectId = projectId,
-            AcceptedCurrency = input.AcceptedCurrency,
-            ProjectCurrency = input.ProjectCurrency,
+            AcceptedSymbol = input.AcceptedSymbol,
+            ProjectSymbol = input.ProjectSymbol,
             CrowdFundingType = input.CrowdFundingType,
             CrowdFundingIssueAmount = input.CrowdFundingIssueAmount,
             PreSalePrice = input.PreSalePrice,
@@ -52,8 +52,8 @@ public static class Extensions
         return new ProjectRegistered()
         {
             ProjectId = projectId,
-            AcceptedCurrency = input.AcceptedCurrency,
-            ProjectCurrency = input.ProjectCurrency,
+            AcceptedSymbol = input.AcceptedSymbol,
+            ProjectSymbol = input.ProjectSymbol,
             CrowdFundingType = input.CrowdFundingType,
             CrowdFundingIssueAmount = input.CrowdFundingIssueAmount,
             PreSalePrice = input.PreSalePrice,

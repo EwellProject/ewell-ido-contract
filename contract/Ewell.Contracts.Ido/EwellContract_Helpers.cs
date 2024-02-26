@@ -122,7 +122,7 @@ namespace Ewell.Contracts.Ido
                 State.ProfitDetailMap[projectId][user] = new ProfitDetail()
                 {
                     LatestPeriod = 0,
-                    Symbol = info.ProjectCurrency,
+                    Symbol = info.ProjectSymbol,
                     TotalProfit = 0
                 };
                 return 0;
@@ -130,7 +130,7 @@ namespace Ewell.Contracts.Ido
             State.ProfitDetailMap[projectId][user] = State.ProfitDetailMap[projectId][user] ?? new ProfitDetail()
             {
                 LatestPeriod = 0,
-                Symbol = info.ProjectCurrency
+                Symbol = info.ProjectSymbol
             };
             var totalProjectTokenAmountStr = new BigIntValue(investAmount).Mul(info.PreSalePrice).Div(EwellContractConstants.Mantissa);
             var totalProjectTokenAmount = Parse(totalProjectTokenAmountStr.Value);

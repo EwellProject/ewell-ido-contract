@@ -15,51 +15,58 @@ service EwellContract {
     //admin
     rpc Initialize (InitializeInput) returns (google.protobuf.Empty) {
     }
-    
-    //project manager
+    //Register to create a project
     rpc Register (RegisterInput) returns (google.protobuf.Empty) {
     }
+    //Update additional Info
     rpc UpdateAdditionalInfo (UpdateAdditionalInfoInput) returns (google.protobuf.Empty) {
     }
+    //Cancel a project
     rpc Cancel (aelf.Hash) returns (google.protobuf.Empty) {
     }
+    //Lock liquidity
     rpc LockLiquidity (aelf.Hash) returns (google.protobuf.Empty) {
     }
+    //After the project side locks the liquidity, it withdraws the symbol to the project creator.
     rpc Withdraw (aelf.Hash) returns (google.protobuf.Empty) {
     }
     rpc AddWhitelists (AddWhitelistsInput) returns (google.protobuf.Empty) {
     }
     rpc RemoveWhitelists (RemoveWhitelistsInput) returns (google.protobuf.Empty) {
     }
+    //Update next period for claim the project symbol
     rpc NextPeriod (aelf.Hash) returns (google.protobuf.Empty) {
-   }
-   //inline 
+    }
     rpc SetWhitelistId(SetWhitelistIdInput) returns(google.protobuf.Empty){
     }
-    //user
+    //User investment participation in project crowdfunding
     rpc Invest (InvestInput) returns (google.protobuf.Empty) {
     }
+    //User disinvest
     rpc UnInvest (aelf.Hash) returns (google.protobuf.Empty) {
     }
+    //Project cancelled, funds returned to investor
     rpc ReFund(aelf.Hash) returns(google.protobuf.Empty) {
     }
+    //Project cancelled, funds returned to investors
     rpc ReFundAll(ReFundAllInput) returns(google.protobuf.Empty) {
-    }  
+    }
+    //User who participate in crowdfunding can receive project tokens after the crowdfunding ends
     rpc Claim (ClaimInput) returns (google.protobuf.Empty) {
     }
+    //Project canceled voluntarily, the user’s liquidated damages can be claimed.
     rpc ClaimLiquidatedDamage (aelf.Hash) returns (google.protobuf.Empty) {
     }
+    //Project canceled voluntarily, the all user’s liquidated damages can be claimed.
     rpc ClaimLiquidatedDamageAll (aelf.Hash) returns (google.protobuf.Empty) {
     }
-
+    //Set ProxyAccountContract
     rpc SetProxyAccountContract(aelf.Address) returns (google.protobuf.Empty){
     }
-    
     //view function
     rpc GetWhitelistContractAddress(google.protobuf.Empty)  returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
-    
     rpc GetAdmin(google.protobuf.Empty)  returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
@@ -105,8 +112,8 @@ message InitializeInput{
     aelf.Address proxy_account_contract_address = 3;
  }
 message RegisterInput {
-    string accepted_currency = 1;
-    string project_currency = 2;
+    string accepted_symbol = 1;
+    string project_symbol = 2;
     string crowd_funding_type = 3;
     int64 crowd_funding_issue_amount = 4;
     int64 pre_sale_price = 5;
@@ -149,7 +156,7 @@ message RemoveWhitelistsInput{
 
 message InvestInput{
     aelf.Hash project_id = 1;
-    string currency = 2;
+    string symbol = 2;
     int64 invest_amount = 3;
 }
 
@@ -187,8 +194,8 @@ message ExtraInfoId {
 
 message ProjectInfo{
     aelf.Hash project_id = 1;
-    string accepted_currency = 2;
-    string project_currency = 3;
+    string accepted_symbol = 2;
+    string project_symbol = 3;
     string crowd_funding_type = 4;
     int64 crowd_funding_issue_amount = 5;
     int64 pre_sale_price = 6;
@@ -268,8 +275,8 @@ message ListMarket{
 message ProjectRegistered{
     option (aelf.is_event) = true;
     aelf.Hash project_id = 1;
-    string accepted_currency = 2;
-    string project_currency = 3;
+    string accepted_symbol = 2;
+    string project_symbol = 3;
     string crowd_funding_type = 4;
     int64 crowd_funding_issue_amount = 5;
     int64 pre_sale_price = 6;
@@ -321,7 +328,7 @@ message Invested{
     string invest_symbol = 3;
     int64 amount = 4;
     int64 total_amount = 5;
-    string project_currency = 6;
+    string project_symbol = 6;
     int64 to_claim_amount = 7;
 }
 
@@ -354,7 +361,7 @@ message Claimed{
     option (aelf.is_event) = true;
     aelf.Hash project_id = 1;
     aelf.Address user = 2; 
-    string project_currency = 3;
+    string project_symbol = 3;
     int64 amount = 4;
     int32 latest_period = 5;
     int32 total_period = 6;
@@ -373,7 +380,7 @@ message Withdrawn{
     aelf.Hash project_id = 1;
     string accepted_symbol = 2;
     int64 withdraw_amount = 3;
-    string project_currency = 4;
+    string project_symbol = 4;
     bool is_burn_rest_token = 5;
     int64 burn_amount = 6;
 }

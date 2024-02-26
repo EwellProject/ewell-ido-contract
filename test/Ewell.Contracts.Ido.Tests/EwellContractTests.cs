@@ -71,8 +71,8 @@ namespace Ewell.Contracts.Ido
             
             var registerInput = new RegisterInput()
             {
-                AcceptedCurrency = "ELF",
-                ProjectCurrency =  TestSymbol,
+                AcceptedSymbol = "ELF",
+                ProjectSymbol =  TestSymbol,
                 CrowdFundingType = "price sale",
                 CrowdFundingIssueAmount = 1000_00000000,
                 PreSalePrice = 50000000,
@@ -187,7 +187,7 @@ namespace Ewell.Contracts.Ido
             await TomStub.Invest.SendAsync(new InvestInput()
             {
                 ProjectId = projectId0,
-                Currency = "ELF",
+                Symbol = "ELF",
                 InvestAmount = investAmount
             });
             
@@ -499,8 +499,8 @@ namespace Ewell.Contracts.Ido
 
             var registerInput = new RegisterInput()
             {
-                AcceptedCurrency = "ELF",
-                ProjectCurrency = TestSymbol,
+                AcceptedSymbol = "ELF",
+                ProjectSymbol = TestSymbol,
                 CrowdFundingType = "price sale",
                 CrowdFundingIssueAmount = 1_00000000,
                 PreSalePrice = 1_00000000,
