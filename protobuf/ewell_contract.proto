@@ -229,7 +229,7 @@ message ProjectListInfo{
 message InvestDetail{
     string invest_symbol = 1;
     int64 amount = 2;
-    bool is_disinvest = 3;
+    bool is_disinvested = 3;
 }
 
 message ProfitDetail{
@@ -337,7 +337,7 @@ message DisInvested{
     aelf.Hash project_id = 1;
     aelf.Address user = 2; 
     string invest_symbol = 3;
-    int64 disinvest_amount = 4;
+    int64 disinvested_amount = 4;
     int64 total_amount = 5;
 }
 

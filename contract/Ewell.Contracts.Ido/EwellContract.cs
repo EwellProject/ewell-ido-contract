@@ -240,7 +240,7 @@ namespace Ewell.Contracts.Ido
              
             var totalInvestAmount = investDetail.Amount.Add(input.InvestAmount);
             investDetail.Amount = totalInvestAmount;
-            investDetail.IsDisinvest = false;
+            investDetail.IsDisinvested = false;
             State.InvestDetailMap[projectInfo.ProjectId][Context.Sender] = investDetail;
             State.ProjectInfoMap[input.ProjectId].CurrentRaisedAmount = State.ProjectInfoMap[input.ProjectId]
                 .CurrentRaisedAmount.Add(input.InvestAmount);
@@ -270,7 +270,7 @@ namespace Ewell.Contracts.Ido
             //disinvest 
             var userinfo = State.InvestDetailMap[input][Context.Sender];
             Assert(userinfo != null,"No invest record");
-            Assert(!userinfo.IsDisinvest,"User has already disinvest");
+            Assert(!userinfo.IsDisinvested,"User has already disinvest");
             var userAmount = userinfo.Amount;
             Assert(userAmount > 0,"Insufficient invest amount");
             State.LiquidatedDamageDetailsMap[input] =
@@ -285,11 +285,11 @@ namespace Ewell.Contracts.Ido
                 User = Context.Sender
             };
 
-            State.InvestDetailMap[input][Context.Sender].IsDisinvest = true;
-            var disinvestAmount = userAmount.Sub(liquidatedDamageAmount);
-            if (disinvestAmount > 0)
+            State.InvestDetailMap[input][Context.Sender].IsDisinvested = true;
+            var disinvestedAmount = userAmount.Sub(liquidatedDamageAmount);
+            if (disinvestedAmount > 0)
             {
-                TransferOut(input, Context.Sender,userinfo.InvestSymbol, disinvestAmount);
+                TransferOut(input, Context.Sender,userinfo.InvestSymbol, disinvestedAmount);
             }
             
             State.InvestDetailMap[input][Context.Sender].Amount = 0;
@@ -304,7 +304,7 @@ namespace Ewell.Contracts.Ido
                 User = Context.Sender,
                 InvestSymbol = userinfo.InvestSymbol,
                 TotalAmount = userAmount,
-                DisinvestAmount = disinvestAmount
+                DisinvestedAmount = disinvestedAmount
             });
             
             liquidatedDamageDetails.Details.Add(detail);

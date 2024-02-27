@@ -159,9 +159,9 @@ namespace Ewell.Contracts.Ido
         {
             var userinfo = State.InvestDetailMap[projectId][user];
             Assert(userinfo != null,"No invest record");
-            Assert(! userinfo.IsDisinvest  ,"User has already unInvest");
+            Assert(! userinfo.IsDisinvested  ,"User has already unInvest");
             Assert(userinfo.Amount > 0,"Insufficient invest amount");
-            State.InvestDetailMap[projectId][user].IsDisinvest = true;
+            State.InvestDetailMap[projectId][user].IsDisinvested = true;
             var unInvestAmount = userinfo.Amount;
             TransferOut(projectId, user, userinfo.InvestSymbol, unInvestAmount);
             State.InvestDetailMap[projectId][user].Amount = 0;
