@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <!-- The root namespace -->
+        <!-- Mark this project as a contract -->
+        <IsContract>true</IsContract>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+        <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    </PropertyGroup>
+    
+    
+    <ItemGroup>
+        <ContractReference Include="..\..\protobuf\token_contract.proto">
+            <Link>Protobuf\Proto\token_contract.proto</Link>
+        </ContractReference>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <!-- Reference the protobuf definition of the contract -->
+        <!--<ContractBase Include="..\..\protobuf\acs12.proto">
+            <Link>Protobuf\Proto\acs12.proto</Link>
+        </ContractBase>-->
+        <!-- Reference the protobuf definition of the contract -->
+        <ContractCode Include="..\..\protobuf\mock_proxy_account_contract.proto">
+            <Link>Protobuf\Proto\mock_proxy_account_contract.proto</Link>
+        </ContractCode>
+    </ItemGroup>
+    <ItemGroup>
+      <PackageReference Include="AElf.Contracts.MultiToken" Version="1.6.0" />
+      <PackageReference Include="AElf.Sdk.CSharp" Version="1.6.0" />
+    </ItemGroup>
+</Project>

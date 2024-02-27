@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <RootNamespace>AElf.Boilerplate.SystemTransactionGenerator</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AElf.Contracts.Genesis" Version="1.6.0" />
+        <PackageReference Include="AElf.Core" Version="1.6.0" />
+        <PackageReference Include="AElf.CSharp.Core" Version="1.6.0" />
+        <PackageReference Include="AElf.Kernel.Consensus.Core" Version="1.6.0" />
+        <PackageReference Include="AElf.Kernel.Core" Version="1.6.0" />
+        <PackageReference Include="AElf.Kernel.SmartContract" Version="1.6.0" />
+        <PackageReference Include="Volo.Abp.Core" Version="5.2.2" />
+    </ItemGroup>
+
+</Project>
