@@ -372,7 +372,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input);
             Assert(projectInfo.Enabled,"Project is not enabled");
-            AdminCheck();
             var projectListInfo = State.ProjectListInfoMap[input];
             Assert(!projectListInfo.IsWithdraw,"Already withdraw" );
             Assert(Context.CurrentBlockTime >= projectInfo.TokenReleaseTime,"Time is not ready");
