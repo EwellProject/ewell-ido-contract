@@ -61,7 +61,7 @@ namespace Ewell.Contracts.Ido
             
             result = await AdminStub.SetLiquidatedDamageConfig.SendWithExceptionAsync(new LiquidatedDamageConfig()
             {
-                DefaultLiquidatedDamageProportion = 0
+                DefaultLiquidatedDamageProportion = -1
             });
             result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
             
@@ -148,7 +148,7 @@ namespace Ewell.Contracts.Ido
             
             //check balance
             var expectedLiquidatedDamageProportion = liquidatedDamageProportion != 0
-                ? liquidatedDamageProportion : EwellContractConstants.LiquidatedDamageProportion;
+                ? liquidatedDamageProportion : EwellContractConstants.DefaultLiquidatedDamageProportion;
             var senderBalanceAfter = await GetBalanceAsync(TestSymbol, AdminAddress);
             var virtualAddressBalanceAfter = await GetBalanceAsync(TestSymbol, virtualAddress);
 
@@ -197,11 +197,11 @@ namespace Ewell.Contracts.Ido
             {
                 ProjectId = new Hash()
             });
-            result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
+            result.TransactionResult.Error.ShouldContain("Project is not exist");
             result = await AdminStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
             {
                 ProjectId = projectId0,
-                LiquidatedDamageProportion = 0
+                LiquidatedDamageProportion = -1
             });
             result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
             

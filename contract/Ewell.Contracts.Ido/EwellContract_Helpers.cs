@@ -63,7 +63,7 @@ namespace Ewell.Contracts.Ido
         private void ValidLiquidatedDamageProportion(int liquidatedDamageProportion)
         {
             Assert(liquidatedDamageProportion <= EwellContractConstants.MaxLiquidatedDamageProportion 
-                   && liquidatedDamageProportion > EwellContractConstants.MinLiquidatedDamageProportion,"Invalid liquidatedDamageProportion input");
+                   && liquidatedDamageProportion >= EwellContractConstants.MinLiquidatedDamageProportion,"Invalid liquidatedDamageProportion input");
         }
 
         private void AdminCheck()
@@ -204,7 +204,7 @@ namespace Ewell.Contracts.Ido
 
             return liquidatedDamageProportion != 0
                 ? liquidatedDamageProportion
-                : EwellContractConstants.LiquidatedDamageProportion;
+                : EwellContractConstants.DefaultLiquidatedDamageProportion;
         }
         
         private static long Parse(string input)

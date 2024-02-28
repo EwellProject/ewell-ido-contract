@@ -8,7 +8,7 @@ namespace Ewell.Contracts.Ido
 
         public const long Mantissa = 100000000;
 
-        public const int LiquidatedDamageProportion = 10_000000;
+        public const int DefaultLiquidatedDamageProportion = 10_000000;
         
         public const int MinLiquidatedDamageProportion = 0;
         

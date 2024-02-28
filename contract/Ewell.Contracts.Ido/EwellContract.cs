@@ -289,7 +289,8 @@ namespace Ewell.Contracts.Ido
             State.LiquidatedDamageDetailsMap[input] =
                 State.LiquidatedDamageDetailsMap[input] ?? new LiquidatedDamageDetails();
             var liquidatedDamageDetails = State.LiquidatedDamageDetailsMap[input];
-            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(EwellContractConstants.LiquidatedDamageProportion).Div(EwellContractConstants.MaxProportion);
+            var liquidatedDamageProportion = GetLiquidatedDamageProportion(projectInfo.LiquidatedDamageProportion);
+            var liquidatedDamageAmountStr = new BigIntValue(userinfo.Amount).Mul(liquidatedDamageProportion).Div(EwellContractConstants.MaxProportion);
             var liquidatedDamageAmount = Parse(liquidatedDamageAmountStr.Value);
             var detail = new LiquidatedDamageDetail()
             {
