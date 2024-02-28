@@ -197,7 +197,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input);
             Assert(projectInfo.Enabled,"Project is not enabled");
-            AdminCheck();
             var projectListInfo = State.ProjectListInfoMap[input];
             Assert(projectListInfo.LatestPeriod < projectListInfo.TotalPeriod,"Insufficient period");
             var currentTokenReleaseTime =
@@ -492,7 +491,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input.ProjectId);
             Assert(!projectInfo.Enabled ,"Project should be disabled");
-            AdminCheck();
             foreach (var user in input.Users)
             {
                 ReFundInternal(input.ProjectId, user);
