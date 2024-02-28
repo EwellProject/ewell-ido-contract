@@ -5,7 +5,7 @@ namespace Ewell.Contracts.Ido;
 public static class Extensions
 {
     public static ProjectInfo CreateProjectInfo(RegisterInput input, Hash projectId, Address creator,
-        long targetRaisedAmount, Hash virtualAddressHash)
+        long targetRaisedAmount, Hash virtualAddressHash, int liquidatedDamageProportion)
     {
         return new ProjectInfo
         {
@@ -25,7 +25,8 @@ public static class Extensions
             TargetRaisedAmount = targetRaisedAmount,
             Enabled = true,
             VirtualAddressHash = virtualAddressHash,
-            TokenReleaseTime = input.TokenReleaseTime
+            TokenReleaseTime = input.TokenReleaseTime,
+            LiquidatedDamageProportion = liquidatedDamageProportion
         };
     }
     
@@ -46,12 +47,11 @@ public static class Extensions
         };
     }
 
-    public static ProjectRegistered GenerateProjectRegisteredEvent(RegisterInput input, Hash projectId, 
-        Address creator, Address virtualAddress, long targetRaisedAmount)
+    public static ProjectRegistered GenerateProjectRegisteredEvent(RegisterInput input, Address virtualAddress, ProjectInfo projectInfo)
     {
         return new ProjectRegistered()
         {
-            ProjectId = projectId,
+            ProjectId = projectInfo.ProjectId,
             AcceptedSymbol = input.AcceptedSymbol,
             ProjectSymbol = input.ProjectSymbol,
             CrowdFundingType = input.CrowdFundingType,
@@ -70,13 +70,14 @@ public static class Extensions
             IsBurnRestToken = input.IsBurnRestToken,
             TotalPeriod = input.TotalPeriod,
             AdditionalInfo = input.AdditionalInfo,
-            TargetRaisedAmount = targetRaisedAmount,
-            Creator = creator,
+            TargetRaisedAmount = projectInfo.TargetRaisedAmount,
+            Creator = projectInfo.Creator,
             FirstDistributeProportion = input.FirstDistributeProportion,
             RestPeriodDistributeProportion = input.RestPeriodDistributeProportion,
             PeriodDuration = input.PeriodDuration,
             TokenReleaseTime = input.TokenReleaseTime,
-            VirtualAddress = virtualAddress
+            VirtualAddress = virtualAddress,
+            LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion
         };
     }
 }

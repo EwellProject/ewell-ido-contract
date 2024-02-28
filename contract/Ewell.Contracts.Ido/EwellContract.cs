@@ -38,10 +38,23 @@ namespace Ewell.Contracts.Ido
             return new Empty();
         }
 
+        public override Empty SetLiquidatedDamageConfig(LiquidatedDamageConfig input)
+        {
+            Assert(State.Initialized.Value, "Contract not Initialized.");
+            Assert(State.Admin.Value == Context.Sender, "No permission.");
+            ValidLiquidatedDamageProportion(input.DefaultLiquidatedDamageProportion);
+            State.LiquidatedDamageConfig.Value = input;
+            return new Empty();
+        }
+        
         public override Empty Register(RegisterInput input)
         {
             ValidTokenSymbolOwner(input.ProjectSymbol, Context.Sender);
             ValidTokenSymbol(input.AcceptedSymbol);
+            if (input.LiquidatedDamageProportion != 0)
+            {
+                ValidLiquidatedDamageProportion(input.LiquidatedDamageProportion);
+            }
             Assert(input.MaxSubscription >= input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
             Assert(input.TokenReleaseTime >= input.EndTime, "Invalid tokenReleaseTime input");
@@ -58,7 +71,8 @@ namespace Ewell.Contracts.Ido
             
             TransferIn(id, Context.Sender, input.ProjectSymbol, input.CrowdFundingIssueAmount);
             State.ProjectCreatorIndexMap[Context.Sender] = State.ProjectCreatorIndexMap[Context.Sender].Add(1);
-            var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, targetRaisedAmount, virtualAddressHash);
+            var projectInfo = Extensions.CreateProjectInfo(input, id, Context.Sender, targetRaisedAmount, virtualAddressHash, 
+                GetLiquidatedDamageProportion(input.LiquidatedDamageProportion));
             State.ProjectInfoMap[id] = projectInfo;
             var listInfo = Extensions.CreateProjectListInfo(input, id);
             State.ProjectListInfoMap[id] = listInfo;
@@ -91,8 +105,7 @@ namespace Ewell.Contracts.Ido
                 });
             }
 
-            Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, id, Context.Sender, 
-                virtualAddress, targetRaisedAmount));
+            Context.Fire(Extensions.GenerateProjectRegisteredEvent(input, virtualAddress, projectInfo));
             return new Empty();
         }
 
@@ -527,6 +540,22 @@ namespace Ewell.Contracts.Ido
                 DoClaimLiquidatedDamage(input, detail);
             }
 
+            return new Empty();
+        }
+
+        public override Empty UpdateLiquidatedDamageProportion(UpdateLiquidatedDamageProportionInput input)
+        {
+            ValidLiquidatedDamageProportion(input.LiquidatedDamageProportion);
+            var projectInfo = ValidProjectExist(input.ProjectId);
+            Assert(projectInfo.Enabled,"Project is not enabled");
+            Assert(Context.CurrentBlockTime < projectInfo.StartTime,"must be before project start time");
+            Assert(projectInfo.Creator == Context.Sender, "No permission.");
+            projectInfo.LiquidatedDamageProportion = input.LiquidatedDamageProportion;
+            Context.Fire(new LiquidatedDamageProportionUpdated
+            {
+                ProjectId = projectInfo.ProjectId,
+                LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion
+            });
             return new Empty();
         }
         

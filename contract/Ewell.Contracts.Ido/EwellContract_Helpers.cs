@@ -59,6 +59,12 @@ namespace Ewell.Contracts.Ido
             var projectInfo = State.ProjectInfoMap[projectId];
             Assert(projectInfo.Creator == Context.Sender,"Only project owner can call this function");
         }
+        
+        private void ValidLiquidatedDamageProportion(int liquidatedDamageProportion)
+        {
+            Assert(liquidatedDamageProportion <= EwellContractConstants.MaxLiquidatedDamageProportion 
+                   && liquidatedDamageProportion > EwellContractConstants.MinLiquidatedDamageProportion,"Invalid liquidatedDamageProportion input");
+        }
 
         private void AdminCheck()
         {
@@ -182,8 +188,25 @@ namespace Ewell.Contracts.Ido
                 HashHelper.ComputeFrom(creatorIndex));
             return hash;
         }
-      
-      
+
+        private int GetLiquidatedDamageProportion(int liquidatedDamageProportion)
+        {
+            if (liquidatedDamageProportion != 0)
+            {
+                return liquidatedDamageProportion;
+            }
+
+            var liquidatedDamageConfig = State.LiquidatedDamageConfig.Value;
+            if (liquidatedDamageConfig != null)
+            {
+                liquidatedDamageProportion = liquidatedDamageConfig.DefaultLiquidatedDamageProportion;
+            }
+
+            return liquidatedDamageProportion != 0
+                ? liquidatedDamageProportion
+                : EwellContractConstants.LiquidatedDamageProportion;
+        }
+        
         private static long Parse(string input)
         {
             if (!long.TryParse(input, out var output))

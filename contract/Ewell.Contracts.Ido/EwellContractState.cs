@@ -10,6 +10,8 @@ namespace Ewell.Contracts.Ido
         
         // Admin Address
         public SingletonState<Address> Admin { get; set; }
+        
+        public SingletonState<LiquidatedDamageConfig> LiquidatedDamageConfig { get; set; }
 
         public MappedState<Hash, ProjectInfo> ProjectInfoMap { get; set; }
 
