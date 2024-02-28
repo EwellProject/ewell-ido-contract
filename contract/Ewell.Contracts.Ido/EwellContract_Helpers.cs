@@ -189,22 +189,16 @@ namespace Ewell.Contracts.Ido
             return hash;
         }
 
-        private int GetLiquidatedDamageProportion(int liquidatedDamageProportion)
+        private int GetLiquidatedDamageProportion(ProportionInfo liquidatedDamageProportionInfo)
         {
-            if (liquidatedDamageProportion != 0)
+            // Return the configured default liquidated damage proportion, or the constant default if null
+            if (liquidatedDamageProportionInfo == null)
             {
-                return liquidatedDamageProportion;
+                return State.LiquidatedDamageConfig.Value?.DefaultLiquidatedDamageProportion
+                       ?? EwellContractConstants.DefaultLiquidatedDamageProportion;
             }
 
-            var liquidatedDamageConfig = State.LiquidatedDamageConfig.Value;
-            if (liquidatedDamageConfig != null)
-            {
-                liquidatedDamageProportion = liquidatedDamageConfig.DefaultLiquidatedDamageProportion;
-            }
-
-            return liquidatedDamageProportion != 0
-                ? liquidatedDamageProportion
-                : EwellContractConstants.DefaultLiquidatedDamageProportion;
+            return liquidatedDamageProportionInfo.Value;
         }
         
         private static long Parse(string input)

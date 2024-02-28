@@ -84,16 +84,19 @@ namespace Ewell.Contracts.Ido
         [Fact]
         public async Task Register_LiquidatedDamageProportion_Not_Null_Test()
         {
-            await RegisterTest(20_000000);
+            await RegisterTest(new ProportionInfo()
+            {
+                Value = 20_000000
+            });
         }
 
         [Fact]
         public async Task Register_Test()
         {
-            await RegisterTest(0);
+            await RegisterTest(null);
         }
         
-        private async Task RegisterTest(int liquidatedDamageProportion)
+        private async Task RegisterTest(ProportionInfo liquidatedDamageProportion)
         {
             await InitializeTest();
             var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
@@ -147,8 +150,8 @@ namespace Ewell.Contracts.Ido
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
             
             //check balance
-            var expectedLiquidatedDamageProportion = liquidatedDamageProportion != 0
-                ? liquidatedDamageProportion : EwellContractConstants.DefaultLiquidatedDamageProportion;
+            var expectedLiquidatedDamageProportion = liquidatedDamageProportion != null
+                ? liquidatedDamageProportion.Value : EwellContractConstants.DefaultLiquidatedDamageProportion;
             var senderBalanceAfter = await GetBalanceAsync(TestSymbol, AdminAddress);
             var virtualAddressBalanceAfter = await GetBalanceAsync(TestSymbol, virtualAddress);
 
@@ -177,7 +180,8 @@ namespace Ewell.Contracts.Ido
             
             var projectInfo = await AdminStub.GetProjectInfo.CallAsync(projectId0);
             projectInfo.Enabled.ShouldBeTrue();
-            projectInfo.LiquidatedDamageProportion.ShouldBe(expectedLiquidatedDamageProportion);
+            projectInfo.LiquidatedDamageProportion.ShouldNotBeNull();
+            projectInfo.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
         }
 
         [Fact]
@@ -220,7 +224,8 @@ namespace Ewell.Contracts.Ido
             result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
             var projectInfo = await AdminStub.GetProjectInfo.CallAsync(projectId0);
             projectInfo.Enabled.ShouldBeTrue();
-            projectInfo.LiquidatedDamageProportion.ShouldBe(expectedLiquidatedDamageProportion);
+            projectInfo.LiquidatedDamageProportion.ShouldNotBeNull();
+            projectInfo.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
             
             var startTime = projectInfo.StartTime;
             blockTimeProvider.SetBlockTime(startTime.AddSeconds(10));

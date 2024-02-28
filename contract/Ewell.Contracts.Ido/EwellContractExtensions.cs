@@ -26,7 +26,7 @@ public static class Extensions
             Enabled = true,
             VirtualAddressHash = virtualAddressHash,
             TokenReleaseTime = input.TokenReleaseTime,
-            LiquidatedDamageProportion = liquidatedDamageProportion
+            LiquidatedDamageProportion = CreateProportionInfo(liquidatedDamageProportion)
         };
     }
     
@@ -77,7 +77,15 @@ public static class Extensions
             PeriodDuration = input.PeriodDuration,
             TokenReleaseTime = input.TokenReleaseTime,
             VirtualAddress = virtualAddress,
-            LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion
+            LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion.Value
+        };
+    }
+
+    public static ProportionInfo CreateProportionInfo(int liquidatedDamageProportion)
+    {
+        return new ProportionInfo
+        {
+            Value = liquidatedDamageProportion
         };
     }
 }

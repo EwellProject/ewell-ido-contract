@@ -28,8 +28,13 @@ namespace Ewell.Contracts.Ido
         public override ProjectInfo GetProjectInfo(Hash input)
         {
             var projectInfo = ValidProjectExist(input);
-            projectInfo.LiquidatedDamageProportion =
-                GetLiquidatedDamageProportion(projectInfo.LiquidatedDamageProportion);
+            var liquidatedDamageProportionInfo = projectInfo.LiquidatedDamageProportion;
+            //to adapt previously created projects
+            if (liquidatedDamageProportionInfo == null)
+            {
+                projectInfo.LiquidatedDamageProportion =
+                    Extensions.CreateProportionInfo(EwellContractConstants.DefaultLiquidatedDamageProportion);
+            }
             return projectInfo;
         }
 

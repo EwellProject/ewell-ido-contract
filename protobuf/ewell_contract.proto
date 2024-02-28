@@ -143,14 +143,17 @@ message RegisterInput {
     int64 period_duration = 21;
     google.protobuf.Timestamp token_release_time = 22;
     string whitelist_url = 23;
-    int32 liquidated_damage_proportion = 24;
+    ProportionInfo liquidated_damage_proportion = 24;
+}
+
+message ProportionInfo{
+    int32 value = 1;
 }
 
 message UpdateAdditionalInfoInput{
     aelf.Hash project_id = 1;
     AdditionalInfo additional_info = 2;  
 }
-
 
 message AddWhitelistsInput{
     aelf.Hash project_id = 1;
@@ -224,7 +227,7 @@ message ProjectInfo{
     bool enabled = 17; 
     aelf.Hash virtual_address_hash = 18;
     google.protobuf.Timestamp token_release_time = 19;
-    int32 liquidated_damage_proportion = 20;
+    ProportionInfo liquidated_damage_proportion = 20;
 } 
 message ProjectListInfo{
     aelf.Hash project_id = 1;

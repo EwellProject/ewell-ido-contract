@@ -51,9 +51,9 @@ namespace Ewell.Contracts.Ido
         {
             ValidTokenSymbolOwner(input.ProjectSymbol, Context.Sender);
             ValidTokenSymbol(input.AcceptedSymbol);
-            if (input.LiquidatedDamageProportion != 0)
+            if (input.LiquidatedDamageProportion != null)
             {
-                ValidLiquidatedDamageProportion(input.LiquidatedDamageProportion);
+                ValidLiquidatedDamageProportion(input.LiquidatedDamageProportion.Value);
             }
             Assert(input.MaxSubscription >= input.MinSubscription && input.MinSubscription > 0,"Invalid subscription input");
             Assert(input.StartTime <= input.EndTime && input.StartTime > Context.CurrentBlockTime,"Invalid startTime or endTime input");
@@ -551,11 +551,11 @@ namespace Ewell.Contracts.Ido
             Assert(projectInfo.Enabled,"Project is not enabled");
             Assert(Context.CurrentBlockTime < projectInfo.StartTime,"must be before project start time");
             Assert(projectInfo.Creator == Context.Sender, "No permission.");
-            projectInfo.LiquidatedDamageProportion = input.LiquidatedDamageProportion;
+            projectInfo.LiquidatedDamageProportion = Extensions.CreateProportionInfo(input.LiquidatedDamageProportion);
             Context.Fire(new LiquidatedDamageProportionUpdated
             {
                 ProjectId = projectInfo.ProjectId,
-                LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion
+                LiquidatedDamageProportion = input.LiquidatedDamageProportion
             });
             return new Empty();
         }
