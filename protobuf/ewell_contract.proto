@@ -24,9 +24,6 @@ service EwellContract {
     //Cancel a project
     rpc Cancel (aelf.Hash) returns (google.protobuf.Empty) {
     }
-    //Lock liquidity
-    rpc LockLiquidity (aelf.Hash) returns (google.protobuf.Empty) {
-    }
     //After the project side locks the liquidity, it withdraws the symbol to the project creator.
     rpc Withdraw (aelf.Hash) returns (google.protobuf.Empty) {
     }
