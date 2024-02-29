@@ -197,7 +197,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input);
             Assert(projectInfo.Enabled,"Project is not enabled");
-            AdminCheck();
             var projectListInfo = State.ProjectListInfoMap[input];
             Assert(projectListInfo.LatestPeriod < projectListInfo.TotalPeriod,"Insufficient period");
             var currentTokenReleaseTime =
@@ -319,55 +318,7 @@ namespace Ewell.Contracts.Ido
             });
             return new Empty();
         }
-
-        // public override Empty LockLiquidity(Hash input)
-        // {
-            // var projectInfo = ValidProjectExist(input);
-            // Assert(projectInfo.Enabled,"project is not enabled");
-            // // ValidProjectOwner(input);
-            // var projectListInfo = State.ProjectListInfoMap[input];
-            // Assert(!projectListInfo.IsListed, "already listed");
-            // Assert(Context.CurrentBlockTime >= projectListInfo.UnlockTime,"time is not ready");
-            // var acceptedCurrencyAmount = projectInfo.CurrentRaisedAmount.Mul(projectListInfo.LiquidityLockProportion)
-            //     .Div(ProportionMax);
-            //
-            // var projectCurrencyAmount = acceptedCurrencyAmount.Mul(projectListInfo.PublicSalePrice).Div(Mantissa);
-            //
-            // foreach (var market in projectListInfo.ListMarketInfo.Data )
-            // {
-            //     var amountADesired = acceptedCurrencyAmount.Mul(market.Weight).Div(ProportionMax);
-            //     var amountBDesired = projectCurrencyAmount.Mul(market.Weight).Div(ProportionMax);
-            //     
-            //     State.TokenContract.Approve.Send(new ApproveInput()
-            //     {
-            //         Spender = market.Market,
-            //         Symbol = projectInfo.AcceptedCurrency,
-            //         Amount = amountADesired
-            //     });
-            //     State.TokenContract.Approve.Send(new ApproveInput()
-            //     {
-            //         Spender = market.Market,
-            //         Symbol = projectInfo.ProjectCurrency,
-            //         Amount = amountBDesired
-            //     });
-            //     State.SwapContract.Value = market.Market;
-            //     State.SwapContract.AddLiquidity.Send(new AddLiquidityInput()
-            //     {
-            //         SymbolA = projectInfo.AcceptedCurrency,
-            //         SymbolB = projectInfo.ProjectCurrency,
-            //         AmountADesired = amountADesired,
-            //         AmountBDesired = amountBDesired,
-            //         AmountAMin = 0,
-            //         AmountBMin = 0,
-            //         Channel = "",
-            //         Deadline = Context.CurrentBlockTime.AddMinutes(3),
-            //         To = Context.Sender
-            //     });
-            //     State.ProjectListInfoMap[input].IsListed = true;
-            // }
-            //      return new Empty();
-            // }
-
+        
         public override Empty Withdraw(Hash input)
         {
             var projectInfo = ValidProjectExist(input);
@@ -492,7 +443,6 @@ namespace Ewell.Contracts.Ido
         {
             var projectInfo = ValidProjectExist(input.ProjectId);
             Assert(!projectInfo.Enabled ,"Project should be disabled");
-            AdminCheck();
             foreach (var user in input.Users)
             {
                 ReFundInternal(input.ProjectId, user);
