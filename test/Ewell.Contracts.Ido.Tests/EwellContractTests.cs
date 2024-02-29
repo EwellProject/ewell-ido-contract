@@ -308,23 +308,6 @@ namespace Ewell.Contracts.Ido
             alreadyDisinvestException.TransactionResult.Error.ShouldContain("User has already disinvest");
         }
 
-
-        // [Fact]
-        // public async Task AddLiquidityTest()
-        // {
-        //     await InvestTest();
-        //     blockTimeProvider.SetBlockTime(blockTimeProvider.GetBlockTime().AddSeconds(30));
-        //     await TokenContractStub.Transfer.SendAsync(new AElf.Contracts.MultiToken.TransferInput()
-        //     {
-        //         Amount = 100000000000,
-        //         Symbol = "TEST",
-        //         Memo = "ForAddLiquidity",
-        //         To = EwellContractAddress
-        //     });
-        //     await AdminStub.LockLiquidity.SendAsync(projectId0);
-        //     
-        // }
-
         [Fact]
         public async Task RefundTest()
         {
