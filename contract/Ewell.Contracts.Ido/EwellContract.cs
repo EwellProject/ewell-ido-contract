@@ -62,7 +62,7 @@ namespace Ewell.Contracts.Ido
             Assert(input.TotalPeriod <= EwellContractConstants.MaxPeriod, "Invalid totalPeriod input");
             Assert(input.FirstDistributeProportion.Add(input.TotalPeriod.Sub(1).Mul(input.RestPeriodDistributeProportion)) <= EwellContractConstants.MaxProportion,"Invalid distributeProportion input");
             var targetRaisedAmount = Parse(new BigIntValue(input.CrowdFundingIssueAmount).Mul(EwellContractConstants.Mantissa).Div(input.PreSalePrice).Value);
-            Assert(targetRaisedAmount >= input.MinSubscription , "Invalid raise amount calculated from input");
+            Assert(targetRaisedAmount > 0, "Invalid raise amount calculated from input");
             var id = GetHash(input, Context.Sender);
             Assert( State.ProjectInfoMap[id] == null, "Project already exist");
             var virtualAddressHash = GetProjectVirtualAddressHash(Context.Sender); 
