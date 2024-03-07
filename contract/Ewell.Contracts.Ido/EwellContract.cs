@@ -498,8 +498,8 @@ namespace Ewell.Contracts.Ido
         {
             ValidLiquidatedDamageProportion(input.LiquidatedDamageProportion);
             var projectInfo = ValidProjectExist(input.ProjectId);
-            Assert(projectInfo.Enabled,"Project is not enabled");
-            Assert(Context.CurrentBlockTime < projectInfo.StartTime,"must be before project start time");
+            Assert(projectInfo.Enabled, "Project is not enabled");
+            Assert(Context.CurrentBlockTime < projectInfo.StartTime, "must be before project start time");
             Assert(projectInfo.Creator == Context.Sender, "No permission.");
             projectInfo.LiquidatedDamageProportion = Extensions.CreateProportionInfo(input.LiquidatedDamageProportion);
             Context.Fire(new LiquidatedDamageProportionUpdated

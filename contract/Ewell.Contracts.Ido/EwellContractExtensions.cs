@@ -77,7 +77,7 @@ public static class Extensions
             PeriodDuration = input.PeriodDuration,
             TokenReleaseTime = input.TokenReleaseTime,
             VirtualAddress = virtualAddress,
-            LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion.Value
+            LiquidatedDamageProportion = projectInfo.LiquidatedDamageProportion
         };
     }
 

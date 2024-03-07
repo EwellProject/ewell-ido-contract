@@ -162,7 +162,7 @@ namespace Ewell.Contracts.Ido
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
                     .NonIndexed);
             var projectId = projectRegistered.ProjectId;
-            projectRegistered.LiquidatedDamageProportion.ShouldBe(expectedLiquidatedDamageProportion);
+            projectRegistered.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
             
             var whitelistUrlLog = WhitelistCreated.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))

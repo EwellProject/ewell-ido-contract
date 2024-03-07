@@ -316,7 +316,7 @@ message ProjectRegistered{
     int64 period_duration = 24;
     aelf.Address virtual_address = 25;
     google.protobuf.Timestamp token_release_time = 26;
-    int32 liquidated_damage_proportion = 27;
+    ProportionInfo liquidated_damage_proportion = 27;
 }
 message NewWhitelistIdSet{
     option (aelf.is_event) = true;
