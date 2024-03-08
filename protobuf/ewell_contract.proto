@@ -57,8 +57,13 @@ service EwellContract {
     //Project canceled voluntarily, the all user’s liquidated damages can be claimed.
     rpc ClaimLiquidatedDamageAll (aelf.Hash) returns (google.protobuf.Empty) {
     }
+    //Update Project Liquidated Damage Proportion
+    rpc UpdateLiquidatedDamageProportion (UpdateLiquidatedDamageProportionInput) returns (google.protobuf.Empty) {
+    }
     //Set ProxyAccountContract
     rpc SetProxyAccountContract(aelf.Address) returns (google.protobuf.Empty){
+    }
+    rpc SetLiquidatedDamageConfig(LiquidatedDamageConfig) returns (google.protobuf.Empty) {
     }
     //view function
     rpc GetWhitelistContractAddress(google.protobuf.Empty)  returns (aelf.Address) {
@@ -100,6 +105,9 @@ service EwellContract {
     rpc GetProxyAccountContract(google.protobuf.Empty) returns (aelf.Address) {
         option (aelf.is_view) = true;
     }
+    rpc GetLiquidatedDamageConfig(google.protobuf.Empty) returns (LiquidatedDamageConfig) {
+        option (aelf.is_view) = true;
+    }
 }
 
 //input
@@ -132,13 +140,17 @@ message RegisterInput {
     int64 period_duration = 21;
     google.protobuf.Timestamp token_release_time = 22;
     string whitelist_url = 23;
+    ProportionInfo liquidated_damage_proportion = 24;
+}
+
+message ProportionInfo{
+    int32 value = 1;
 }
 
 message UpdateAdditionalInfoInput{
     aelf.Hash project_id = 1;
     AdditionalInfo additional_info = 2;  
 }
-
 
 message AddWhitelistsInput{
     aelf.Hash project_id = 1;
@@ -178,6 +190,10 @@ message ReFundAllInput{
     aelf.Hash project_id = 1;
     repeated aelf.Address users = 2;
 }
+message UpdateLiquidatedDamageProportionInput{
+    aelf.Hash project_id = 1;
+    int32 liquidated_damage_proportion = 2;
+}
 //Output
 message ExtraInfoIdList {
     repeated ExtraInfoId value = 1;
@@ -208,6 +224,7 @@ message ProjectInfo{
     bool enabled = 17; 
     aelf.Hash virtual_address_hash = 18;
     google.protobuf.Timestamp token_release_time = 19;
+    ProportionInfo liquidated_damage_proportion = 20;
 } 
 message ProjectListInfo{
     aelf.Hash project_id = 1;
@@ -266,7 +283,9 @@ message ListMarket{
     aelf.Address market = 1;
     int32 weight = 2;
 }
-
+message LiquidatedDamageConfig{
+    int32 default_liquidated_damage_proportion = 1;
+}
 //event
 
 message ProjectRegistered{
@@ -297,6 +316,7 @@ message ProjectRegistered{
     int64 period_duration = 24;
     aelf.Address virtual_address = 25;
     google.protobuf.Timestamp token_release_time = 26;
+    ProportionInfo liquidated_damage_proportion = 27;
 }
 message NewWhitelistIdSet{
     option (aelf.is_event) = true;
@@ -382,3 +402,8 @@ message Withdrawn{
     int64 burn_amount = 6;
 }
 
+message LiquidatedDamageProportionUpdated{
+    option (aelf.is_event) = true;
+    aelf.Hash project_id = 1;
+    int32 liquidated_damage_proportion = 2;
+}

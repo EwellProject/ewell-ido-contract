@@ -51,12 +51,54 @@ namespace Ewell.Contracts.Ido
             var proxyAccountContract = await AdminStub.GetProxyAccountContract.CallAsync(new Empty());
             proxyAccountContract.ShouldBe(ProxyAccountContractAddress);
         }
-
+        
         [Fact]
-        public async Task RegisterTest()
+        public async Task SetLiquidatedDamageConfig_Test()
         {
             await InitializeTest();
+            var result = await TomStub.SetLiquidatedDamageConfig.SendWithExceptionAsync(new LiquidatedDamageConfig());
+            result.TransactionResult.Error.ShouldContain("No permission.");
             
+            result = await AdminStub.SetLiquidatedDamageConfig.SendWithExceptionAsync(new LiquidatedDamageConfig()
+            {
+                DefaultLiquidatedDamageProportion = -1
+            });
+            result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
+            
+            result = await AdminStub.SetLiquidatedDamageConfig.SendWithExceptionAsync(new LiquidatedDamageConfig()
+            {
+                DefaultLiquidatedDamageProportion = 101_000000
+            });
+            result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
+
+            var expectedDefaultLiquidatedDamageProportion = 20_000000;
+            result = await AdminStub.SetLiquidatedDamageConfig.SendAsync(new LiquidatedDamageConfig()
+            {
+                DefaultLiquidatedDamageProportion = expectedDefaultLiquidatedDamageProportion
+            });
+            result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var liquidatedDamageConfig = await AdminStub.GetLiquidatedDamageConfig.CallAsync(new Empty());
+            liquidatedDamageConfig.DefaultLiquidatedDamageProportion.ShouldBe(expectedDefaultLiquidatedDamageProportion);
+        }
+
+        [Fact]
+        public async Task Register_LiquidatedDamageProportion_Not_Null_Test()
+        {
+            await RegisterTest(new ProportionInfo()
+            {
+                Value = 20_000000
+            });
+        }
+
+        [Fact]
+        public async Task Register_Test()
+        {
+            await RegisterTest(null);
+        }
+        
+        private async Task RegisterTest(ProportionInfo liquidatedDamageProportion)
+        {
+            await InitializeTest();
             var virtualAddress = await AdminStub.GetPendingProjectAddress.CallAsync(AdminAddress);
             var senderBalanceBefore = await GetBalanceAsync(TestSymbol, AdminAddress);
             var virtualAddressBalanceBefore = await GetBalanceAsync(TestSymbol, virtualAddress);
@@ -102,22 +144,26 @@ namespace Ewell.Contracts.Ido
                 RestPeriodDistributeProportion = 0,
                 PeriodDuration = 0,
                 TokenReleaseTime = blockTimeProvider.GetBlockTime().AddSeconds(30),
-                WhitelistUrl = WhitelistUrl
+                WhitelistUrl = WhitelistUrl,
+                LiquidatedDamageProportion = liquidatedDamageProportion
             };
             var executionResult = await AdminStub.Register.SendAsync(registerInput);
-
             
             //check balance
+            var expectedLiquidatedDamageProportion = liquidatedDamageProportion != null
+                ? liquidatedDamageProportion.Value : EwellContractConstants.DefaultLiquidatedDamageProportion;
             var senderBalanceAfter = await GetBalanceAsync(TestSymbol, AdminAddress);
             var virtualAddressBalanceAfter = await GetBalanceAsync(TestSymbol, virtualAddress);
 
             senderBalanceAfter.ShouldBe(999000_00000000);
             virtualAddressBalanceAfter.ShouldBe(1000_00000000);
-            
-            var projectId = ProjectRegistered.Parser
+
+            var projectRegistered = ProjectRegistered.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(ProjectRegistered)))
-                    .NonIndexed)
-                .ProjectId;
+                    .NonIndexed);
+            var projectId = projectRegistered.ProjectId;
+            projectRegistered.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
+            
             var whitelistUrlLog = WhitelistCreated.Parser
                 .ParseFrom(executionResult.TransactionResult.Logs.First(l => l.Name.Contains(nameof(WhitelistCreated)))
                     .NonIndexed)
@@ -131,12 +177,70 @@ namespace Ewell.Contracts.Ido
             whitelistId.ShouldBe(whitelistIdLog);
             WhitelistUrl.ShouldBe(whitelistUrlLog);
             projectId0 = projectId;
+            
+            var projectInfo = await AdminStub.GetProjectInfo.CallAsync(projectId0);
+            projectInfo.Enabled.ShouldBeTrue();
+            projectInfo.LiquidatedDamageProportion.ShouldNotBeNull();
+            projectInfo.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
+        }
+
+        [Fact]
+        public async Task UpdateLiquidatedDamageProportion_Test()
+        {
+            await Register_Test();
+            
+            var expectedLiquidatedDamageProportion = 20_000000;
+            var result = await TomStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = projectId0,
+                LiquidatedDamageProportion = expectedLiquidatedDamageProportion
+            });
+            result.TransactionResult.Error.ShouldContain("No permission.");
+            
+            result = await AdminStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = new Hash()
+            });
+            result.TransactionResult.Error.ShouldContain("Project is not exist");
+            result = await AdminStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = projectId0,
+                LiquidatedDamageProportion = -1
+            });
+            result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
+            
+            result = await AdminStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = projectId0,
+                LiquidatedDamageProportion = 101_000000
+            });
+            result.TransactionResult.Error.ShouldContain("Invalid liquidatedDamageProportion input");
+            
+            result = await AdminStub.UpdateLiquidatedDamageProportion.SendAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = projectId0,
+                LiquidatedDamageProportion = expectedLiquidatedDamageProportion
+            });
+            result.TransactionResult.Status.ShouldBe(TransactionResultStatus.Mined);
+            var projectInfo = await AdminStub.GetProjectInfo.CallAsync(projectId0);
+            projectInfo.Enabled.ShouldBeTrue();
+            projectInfo.LiquidatedDamageProportion.ShouldNotBeNull();
+            projectInfo.LiquidatedDamageProportion.Value.ShouldBe(expectedLiquidatedDamageProportion);
+            
+            var startTime = projectInfo.StartTime;
+            blockTimeProvider.SetBlockTime(startTime.AddSeconds(10));
+            result = await AdminStub.UpdateLiquidatedDamageProportion.SendWithExceptionAsync(new UpdateLiquidatedDamageProportionInput()
+            {
+                ProjectId = projectId0,
+                LiquidatedDamageProportion = expectedLiquidatedDamageProportion
+            });
+            result.TransactionResult.Error.ShouldContain("must be before project start time");
         }
 
         [Fact]
         public async Task WhitelistTest()
         {
-            await RegisterTest();
+            await Register_Test();
 
             await AdminStub.AddWhitelists.SendAsync(new AddWhitelistsInput()
             {
@@ -160,7 +264,7 @@ namespace Ewell.Contracts.Ido
         [Fact]
         public async Task AddWhitelistsTest()
         {
-            await RegisterTest();
+            await Register_Test();
 
             await AdminStub.AddWhitelists.SendAsync(new AddWhitelistsInput()
             {
@@ -449,7 +553,7 @@ namespace Ewell.Contracts.Ido
         [Fact]
         public async Task GetProjectListInfo_Test()
         {
-            await RegisterTest();
+            await Register_Test();
             
             //check
             var projectListInfo = await TomStub.GetProjectListInfo.CallAsync(projectId0);

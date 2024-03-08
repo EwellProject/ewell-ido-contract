@@ -27,8 +27,15 @@ namespace Ewell.Contracts.Ido
 
         public override ProjectInfo GetProjectInfo(Hash input)
         {
-            ValidProjectExist(input);
-            return State.ProjectInfoMap[input];
+            var projectInfo = ValidProjectExist(input);
+            var liquidatedDamageProportionInfo = projectInfo.LiquidatedDamageProportion;
+            //to adapt previously created projects
+            if (liquidatedDamageProportionInfo == null)
+            {
+                projectInfo.LiquidatedDamageProportion =
+                    Extensions.CreateProportionInfo(EwellContractConstants.DefaultLiquidatedDamageProportion);
+            }
+            return projectInfo;
         }
 
         public override InvestDetail GetInvestDetail(GetInvestDetailInput input)
@@ -71,6 +78,11 @@ namespace Ewell.Contracts.Ido
             var hash = GetProjectVirtualAddressHash(input);
             var virtualAddress = Context.ConvertVirtualAddressToContractAddress(hash);
             return virtualAddress;
+        }
+        
+        public override LiquidatedDamageConfig GetLiquidatedDamageConfig(Empty input)
+        {
+            return State.LiquidatedDamageConfig.Value;
         }
     }
 }
